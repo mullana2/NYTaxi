@@ -1,0 +1,65 @@
+---
+title: "Data_Cleaning"
+author: "Aidan Mullan"
+date: "2/19/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(rvest)
+library(xml2)
+library(magrittr)
+library(stringr)
+library(tidyr)
+
+URL <- "https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page"
+
+links <- read_html(URL) %>% html_nodes("a") %>% html_attr('href')
+
+## Subset to only yellow cab datasets
+yellow_index <- str_detect(links, "yellow_tripdata")
+yellow_data <- links[yellow_index]
+
+#####
+## The rest of this chunk requires ~5/6 minutes to run
+#####
+
+## Retrieve data for June 2018
+june2018 <- read.csv(yellow_data[6])
+names(june2018)
+
+## Extract day/time/location of pickup + dropoff, and distance
+sub_june2018 <- june2018[,c(2,3,5,8,9)]
+
+## Split datetime variables into separate day and time variables
+firstsplit_june2018 <- sub_june2018 %>% separate(tpep_pickup_datetime, sep = " ", n = 2,
+                                                 into = c("pickup_date", "pickup_time")) %>%
+                                        separate(tpep_dropoff_datetime, sep = " ", n = 2,
+                                                 into = c("dropoff_date", "dropoff_time"))
+
+## Split time into hour, minute, second and split day into year, month, and day
+clean_june2018 <- firstsplit_june2018 %>% separate(pickup_time, sep = ":", n = 3,
+                                                  into = c("PU_hour", "PU_minute", "PU_second")) %>%
+                                         separate(pickup_date, sep = "-", n = 3,
+                                                  into = c("PU_year", "PU_month", "PU_day")) %>%
+                                         separate(dropoff_time, sep = ":", n = 3,
+                                                  into = c("DO_hour", "DO_minute", "DO_second")) %>%
+                                         separate(dropoff_date, sep = "-", n = 3,
+                                                  into = c("DO_year", "DO_month", "DO_day"))
+```
+
+## Ideas after meeting
+
+For first presentation
+--Subset to single month and only Manhattan
+-- Overall characteristics:
+----- Total trips, average trips per day/half-hour
+----- Number of regions, average trips per region
+-- Histogram of number of trips for single region during single half-hour period
+-- Heatmap of Manhattan during single half-hour
+-- Maybe: Heatmap gif of Manhattan over time to show change
+
