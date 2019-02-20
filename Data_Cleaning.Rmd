@@ -25,10 +25,46 @@ yellow_index <- str_detect(links, "yellow_tripdata")
 yellow_data <- links[yellow_index]
 
 #####
-## The rest of this chunk requires ~5/6 minutes to run
+## NOTE: Lat/Long coordinates are not provided after June 2016
 #####
 
-## Retrieve data for June 2018
+```
+
+```{r}
+#####-------------
+## Sample code for extracting data from sets prior to July 2016
+#####-------------
+
+## Retrieve data for June 2016
+june2016 <- read.csv(yellow_data[24])
+names(june2016)
+
+## Extract day/time/lat+long of pickup + dropoff, and distance
+sub_june2016 <- june2016[,c(2,3,6,7,10,11)]
+
+## Split datetime variables into separate day and time variables
+firstsplit_june2016 <- sub_june2016 %>% separate(tpep_pickup_datetime, sep = " ", n = 2,
+                                                 into = c("pickup_date", "pickup_time")) %>%
+                                        separate(tpep_dropoff_datetime, sep = " ", n = 2,
+                                                 into = c("dropoff_date", "dropoff_time"))
+
+## Split time into hour, minute, second and split day into year, month, and day
+clean_june2016 <- firstsplit_june2016 %>% separate(pickup_time, sep = ":", n = 3,
+                                                  into = c("PU_hour", "PU_minute", "PU_second")) %>%
+                                         separate(pickup_date, sep = "-", n = 3,
+                                                  into = c("PU_year", "PU_month", "PU_day")) %>%
+                                         separate(dropoff_time, sep = ":", n = 3,
+                                                  into = c("DO_hour", "DO_minute", "DO_second")) %>%
+                                         separate(dropoff_date, sep = "-", n = 3,
+                                                  into = c("DO_year", "DO_month", "DO_day"))
+```
+
+```{r}
+#####-------------
+## Sample code for extracting data from sets from July 2016 on
+#####-------------
+
+## Retrieve data for June 2016
 june2018 <- read.csv(yellow_data[6])
 names(june2018)
 
@@ -51,6 +87,8 @@ clean_june2018 <- firstsplit_june2018 %>% separate(pickup_time, sep = ":", n = 3
                                          separate(dropoff_date, sep = "-", n = 3,
                                                   into = c("DO_year", "DO_month", "DO_day"))
 ```
+
+
 
 ## Ideas after meeting
 
