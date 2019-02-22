@@ -76,7 +76,8 @@ pu_mean_long <- mean(pu_june2016$pickup_longitude)
 pu_map_raw <- get_map(location = c(pu_mean_long, pu_mean_lat), zoom = 8, scale = 2)
 pu_map <- ggmap(pu_map_raw, legend = "none")
 pu_map
-pu_heatmap <- pu_map + stat_density_2d(data = pu_june2016, aes(x = pickup_longitude, y = pickup_latitude))
+pu_heatmap <- pu_map + geom_point(data = pu_june2016, alpha = 0.25, size = 0.5,
+                                  aes(x = pickup_longitude, y = pickup_latitude))
 pu_heatmap
 
 do_june2016 <- s_june[,c(1:3,7:8)]
