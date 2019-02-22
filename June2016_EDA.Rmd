@@ -19,7 +19,6 @@ library(stringr)
 library(tidyr)
 library(ggplot2)
 library(ggmap)
-register_google(key = "AIzaSyBtRthYy9re0SrgWwERYSuEwG_pxDJM84c", write = TRUE)
 
 
 ## Retrieving yellow taxi data for June 2016
