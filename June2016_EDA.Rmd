@@ -122,4 +122,14 @@ do_densitymap <- do_map2 + geom_point(data = do_june2016, alpha = 0.05, size = 0
 
 do_heatmap; do_densitymap; pu_heatmap; pu_densitymap
 
+ovr_densitymap <- do_map + geom_point(data = do_june2016, alpha = 0.05, size = 0.1,
+                                  aes(x = dropoff_longitude, y = dropoff_latitude)) +
+                           geom_point(data = pu_june2016, alpha = 0.05, size = 0.1,
+                                  aes(x = pickup_longitude, y = pickup_latitude)) + 
+  ggtitle("NY Dropoffs and Pickups on June 2016 at Noon") + 
+  theme(text = element_text(size = 15), axis.text = element_blank(), axis.ticks = element_blank(),
+        axis.line = element_blank()) + 
+  labs(x = "", y = "")
+  
+
 ```
