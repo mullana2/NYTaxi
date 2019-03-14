@@ -121,7 +121,7 @@ pu_map <- ggmap(pu_map_raw, legend = "none")
 
 ggplot(PU16_counts, aes(geohash=geohash, fill = pickups)) + geom_rect(stat="geohash") + coord_quickmap() + scale_fill_gradient(low = "dodgerblue", high = "navyblue") + xlim(-74.2,-73.7)
 
-PUGH_map <- pu_map + geom_point(data = PU16_counts, size = 0.1, na.rm = TRUE,
+PUGH_map <- pu_map + geom_point(data = PU16_counts, size = 0.1, na.rm = TRUE, shape = 0,
                                           aes(x = lon, y = lat, color = pickups)) + 
   scale_color_gradient2(high = "navyblue", low = "dodgerblue", mid = "navyblue", midpoint = 1250) +
   coord_fixed() +
@@ -148,7 +148,7 @@ DO16_counts <- DO16_main %>% group_by(geohash) %>% summarise(dropoffs = n())
 DO16_counts$lat <- geohash::gh_decode(DO16_counts$geohash)[,2]
 DO16_counts$lon <- geohash::gh_decode(DO16_counts$geohash)[,3]
 
-DOGH_map <- pu_map + geom_point(data = DO16_counts, size = 0.1, na.rm = TRUE,
+DOGH_map <- pu_map + geom_point(data = DO16_counts, size = 0.1, na.rm = TRUE, shape = 0,
                                        aes(x = lon, y = lat, color = dropoffs)) + 
   scale_color_gradient2(high = "navyblue", low = "dodgerblue", mid = "navyblue", midpoint = 1250) +
   coord_fixed() + 
