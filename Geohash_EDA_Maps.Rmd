@@ -1,0 +1,167 @@
+---
+title: "Geohash_Test"
+author: "Aidan Mullan"
+date: "3/14/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(rvest)
+library(xml2)
+library(magrittr)
+library(stringr)
+library(tidyr)
+library(ggplot2)
+library(ggmap)
+library(gridExtra)
+library(cowplot)
+library(devtools)
+library(geohash)
+library(tidyverse)
+
+## Retrieving yellow taxi data for June 2016
+URL <- "https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page"
+
+links <- read_html(URL) %>% html_nodes("a") %>% html_attr('href')
+
+## Subset to only yellow cab datasets
+yellow_index <- str_detect(links, "yellow_tripdata")
+yellow_data <- links[yellow_index]
+june2016 <- read.csv(yellow_data[24])
+```
+
+```{r}
+###
+### Cleaning data file to have desired values
+###
+
+## Extract day/time/lat+long of pickup + dropoff, and distance
+sub_june2016 <- june2016[,c(2,3,6,7,10,11)]
+
+## Split datetime variables into separate day and time variables
+firstsplit_june2016 <- sub_june2016 %>% separate(tpep_pickup_datetime, sep = " ", n = 2,
+                                                 into = c("pickup_date", "pickup_time")) %>%
+                                        separate(tpep_dropoff_datetime, sep = " ", n = 2,
+                                                 into = c("dropoff_date", "dropoff_time"))
+
+## Split time into hour, minute, second and split day into year, month, and day
+clean_june2016 <- firstsplit_june2016 %>% separate(pickup_time, sep = ":", n = 3,
+                                                  into = c("PU_hour", "PU_minute", "PU_second")) %>%
+                                         separate(pickup_date, sep = "-", n = 3,
+                                                  into = c("PU_year", "PU_month", "PU_day")) %>%
+                                         separate(dropoff_time, sep = ":", n = 3,
+                                                  into = c("DO_hour", "DO_minute", "DO_second")) %>%
+                                         separate(dropoff_date, sep = "-", n = 3,
+                                                  into = c("DO_year", "DO_month", "DO_day"))
+
+pu_june2016_raw <- subset(clean_june2016, subset = PU_hour == 12 & PU_minute <= 30)[,c(3:5,9:11,13:16)]
+pu_june2016 <- pu_june2016_raw[,c(1:3,7:8)]
+PU16 <- subset(pu_june2016, subset = pickup_latitude != 0 & pickup_longitude != 0)
+```
+
+```{r}
+StatGeohash <- ggproto("StatGeohash", Stat,
+                       default_aes = aes(xmin = ..xmin..,
+                                         ymin= ..ymin..,
+                                         xmax = ..xmax..,
+                                         ymax= ..ymax..,
+                                         geohash= NA,
+                                         colour = NA, fill = "grey20", size = 0.5,
+                         linetype = 1, alpha = 1
+                       ),
+                       compute_group = function(data, scales){
+                         if(!("geohash" %in% names(data)))
+                           stop("missing aesthetic \'geohash\' from stat_geohash")
+                         lat_lng_errs <- geohash::gh_decode(data$geohash)  
+                         out <- data.frame(xmin=lat_lng_errs$lng-lat_lng_errs$lng_error,
+                                           xmax=lat_lng_errs$lng+lat_lng_errs$lng_error,
+                                           ymin=lat_lng_errs$lat-lat_lng_errs$lat_error,
+                                           ymax=lat_lng_errs$lat+lat_lng_errs$lat_error, 
+                                           geohash=data$geohash,
+                                           stringsAsFactors = FALSE)
+                         return(out)
+                       }
+)
+
+stat_geohash <- function(mapping=NULL, data=NULL, geom="rect",
+                         position = "identity", na.rm = FALSE, show.legend = NA, 
+                         inherit.aes = TRUE, ...) {
+  ggplot2::layer(
+    stat = StatGeohash, data = data, mapping = mapping, geom = geom, 
+    position = position, show.legend = show.legend, inherit.aes = inherit.aes,
+    params = list(na.rm = na.rm, ...)
+  )
+}
+```
+
+```{r}
+## Geohash map of pickups
+#####--------------------
+
+lat_mid <- quantile(PU16$pickup_latitude, probs = c(.0005, 0.9995))
+lon_mid <- quantile(PU16$pickup_longitude, probs = c(.0005, 0.9995))
+
+PU16_main <- subset(PU16, subset = pickup_latitude > lat_mid[[1]] & pickup_latitude < lat_mid[[2]])
+PU16_main <- subset(PU16_main, subset = pickup_latitude > lat_mid[[1]] &
+                      pickup_latitude < lat_mid[[2]])
+PU16_main$geohash <- geohash::gh_encode(lats = PU16_main$pickup_latitude, lngs = PU16_main$pickup_longitude,
+                                   precision = 7)
+PU16_counts <- PU16_main %>% group_by(geohash) %>% summarise(pickups = n())
+PU16_counts$lat <- geohash::gh_decode(PU16_counts$geohash)[,2]
+PU16_counts$lon <- geohash::gh_decode(PU16_counts$geohash)[,3]
+
+PU_mlat <- mean(PU16_main$pickup_latitude)
+PU_mlon <- mean(PU16_main$pickup_longitude)
+pu_map_raw <- get_map(location = c(PU_mlon, PU_mlat), zoom = 11, scale = 2)
+pu_map <- ggmap(pu_map_raw, legend = "none")
+
+ggplot(PU16_counts, aes(geohash=geohash, fill = pickups)) + geom_rect(stat="geohash") + coord_quickmap() + scale_fill_gradient(low = "dodgerblue", high = "navyblue") + xlim(-74.2,-73.7)
+
+PUGH_map <- pu_map + geom_point(data = PU16_counts, size = 0.1, na.rm = TRUE,
+                                          aes(x = lon, y = lat, color = pickups)) + 
+  scale_color_gradient2(high = "navyblue", low = "dodgerblue", mid = "navyblue", midpoint = 1250) +
+  coord_fixed() +
+  ggtitle("Geohash Map of Pickups, June 2016 (12-12:30PM)") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank())
+```
+
+```{r}
+## Geohash map of dropoffs
+#####---------------------
+
+do_june2016_raw <- subset(clean_june2016, subset = DO_hour == 12 & DO_minute <= 30)[,c(3:5,9:11,13:16)]
+do_june2016 <- do_june2016_raw[,c(4:6,9:10)]
+DO16 <- subset(do_june2016, subset = dropoff_latitude != 0 & dropoff_longitude != 0)
+
+DO16_main <- subset(DO16, subset = dropoff_latitude > lat_mid[[1]] & dropoff_latitude < lat_mid[[2]])
+DO16_main <- subset(DO16_main, subset = dropoff_latitude > lat_mid[[1]] &
+                      dropoff_latitude < lat_mid[[2]])
+DO16_main$geohash <- geohash::gh_encode(lats = DO16_main$dropoff_latitude,
+                                        lngs = DO16_main$dropoff_longitude, precision = 7)
+DO16_counts <- DO16_main %>% group_by(geohash) %>% summarise(dropoffs = n())
+DO16_counts$lat <- geohash::gh_decode(DO16_counts$geohash)[,2]
+DO16_counts$lon <- geohash::gh_decode(DO16_counts$geohash)[,3]
+
+DOGH_map <- pu_map + geom_point(data = DO16_counts, size = 0.1, na.rm = TRUE,
+                                       aes(x = lon, y = lat, color = dropoffs)) + 
+  scale_color_gradient2(high = "navyblue", low = "dodgerblue", mid = "navyblue", midpoint = 1250) +
+  coord_fixed() + 
+  ggtitle("Geohash Map of Dropoffs, June 2016 (12-12:30PM)") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank())
+```
+
+```{r, warnings = FALSE}
+PUGH_map; DOGH_map
+```
+
+
+
+
