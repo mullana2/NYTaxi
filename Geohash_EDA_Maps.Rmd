@@ -123,7 +123,7 @@ ggplot(PU16_counts, aes(geohash=geohash, fill = pickups)) + geom_rect(stat="geoh
 
 PUGH_map <- pu_map + geom_point(data = PU16_counts, size = 0.1, na.rm = TRUE, shape = 0,
                                           aes(x = lon, y = lat, color = pickups)) + 
-  scale_color_gradient2(high = "navyblue", low = "dodgerblue", mid = "navyblue", midpoint = 1250) +
+  scale_color_gradient2(high = "black", low = "dodgerblue", mid = "navyblue", midpoint = 1250) +
   coord_fixed() +
   ggtitle("Geohash Map of Pickups, June 2016 (12-12:30PM)") +
   xlab("") + ylab("") +
@@ -150,7 +150,7 @@ DO16_counts$lon <- geohash::gh_decode(DO16_counts$geohash)[,3]
 
 DOGH_map <- pu_map + geom_point(data = DO16_counts, size = 0.1, na.rm = TRUE, shape = 0,
                                        aes(x = lon, y = lat, color = dropoffs)) + 
-  scale_color_gradient2(high = "navyblue", low = "dodgerblue", mid = "navyblue", midpoint = 1250) +
+  scale_color_gradient2(high = "black", low = "dodgerblue", mid = "navyblue", midpoint = 1250) +
   coord_fixed() + 
   ggtitle("Geohash Map of Dropoffs, June 2016 (12-12:30PM)") +
   xlab("") + ylab("") +
