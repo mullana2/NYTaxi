@@ -88,10 +88,10 @@ pu_map_raw <- get_map(location = c(pu_mean_long, pu_mean_lat), zoom = 11, scale 
 pu_map <- ggmap(pu_map_raw, legend = "none")
 pu_heatmap <- pu_map + geom_point(data = pu_june2016, alpha = 0.05, size = 0.1,
                                   aes(x = pickup_longitude, y = pickup_latitude)) + 
-  ggtitle("New York City Pickups on June 2016 at Noon") + 
-  theme(text = element_text(size = 15), axis.text = element_blank(), axis.ticks = element_blank(),
-        axis.line = element_blank()) + 
-  labs(x = "", y = "")
+  ggtitle("Figure 1: New York City Pickups on June 2016 at Noon") + 
+  theme(text = element_text(size = 8), axis.text = element_blank(), axis.ticks = element_blank(),
+        axis.line = element_blank(), plot.title = element_text(size = 4)) + 
+  labs(x = "", y = "") + coord_fixed(ratio = 1)
 
 pu_map_raw2 <- get_map(location = c(pu_mean_long, pu_mean_lat), zoom = 12, scale = 2)
 pu_map2 <- ggmap(pu_map_raw2, legend = "none")
@@ -106,10 +106,10 @@ do_map_raw <- get_map(location = c(do_mean_long, do_mean_lat), zoom = 11, scale 
 do_map <- ggmap(do_map_raw, legend = "none")
 do_heatmap <- do_map + geom_point(data = do_june2016, alpha = 0.05, size = 0.1,
                                   aes(x = dropoff_longitude, y = dropoff_latitude)) + 
-  ggtitle("New York City Dropoffs on June 2016 at Noon") + 
+  ggtitle("Figure 2: New York City Dropoffs on June 2016 at Noon") + 
   theme(text = element_text(size = 15), axis.text = element_blank(), axis.ticks = element_blank(),
-        axis.line = element_blank()) + 
-  labs(x = "", y = "")
+        axis.line = element_blank(), plot.title = element_text(size = 4)) + 
+  labs(x = "", y = "")  + coord_fixed(ratio = 1)
 
 do_map_raw2 <- get_map(location = c(do_mean_long, do_mean_lat), zoom = 12, scale = 2)
 do_map2 <- ggmap(do_map_raw2, legend = "none")
@@ -131,5 +131,16 @@ ovr_heatmap <- pu_map + geom_point(data = do_june2016, alpha = 0.05, size = 0.1,
         axis.line = element_blank()) + 
   labs(x = "", y = "")
   
-ovr_heatmap; pu_heatmap
+do_heatmap; pu_heatmap
 ```
+
+```{r}
+tiff(file = "Images/DO_heatmap1", width = 3, height = 3, units = "in", res = 300, pointsize = 6)
+do_heatmap
+dev.off()
+
+tiff(file = "Images/PU_heatmap1", width = 3, height = 3, units = "in", res = 300, pointsize = 6)
+pu_heatmap
+dev.off()
+```
+

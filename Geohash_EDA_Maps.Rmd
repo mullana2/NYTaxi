@@ -156,10 +156,57 @@ DOGH_map <- pu_map + geom_point(data = DO16_counts, size = 0.1, na.rm = TRUE, sh
   xlab("") + ylab("") +
   theme(axis.line = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank())
+
+all_counts <- merge(PU16_counts, DO16_counts, by = "geohash", all = TRUE)
+all_counts$lat <- ifelse(is.na(all_counts$lat.x), all_counts$lat.y, all_counts$lat.x)
+all_counts$lon <- ifelse(is.na(all_counts$lon.x), all_counts$lon.y, all_counts$lon.x)
+full_counts <- all_counts[,c(1,2,5,8,9)]
+
+full_counts$pickups <- ifelse(is.na(full_counts$pickups), 0, full_counts$pickups)
+full_counts$dropoffs <- ifelse(is.na(full_counts$dropoffs), 0, full_counts$dropoffs)
+full_counts$netdiff <- full_counts$pickups - full_counts$dropoffs
+
+pos_counts <- subset(full_counts, subset = netdiff > 0)
+pos_counts$color <- cut(pos_counts$netdiff, breaks = c(0,36,3000), labels = c("(1,36]", "(36,2505]"))
+neg_counts <- subset(full_counts, subset = netdiff < 0)
+neg_counts$color <- cut(neg_counts$netdiff, breaks = c(-710, -6, 0), labels = c("[-709,-5)", "[-5, 0)"))
+
+pos_netmap <- pu_map + geom_point(data = pos_counts, size = 0.03, na.rm = TRUE, shape = 0,
+                                       aes(x = lon, y = lat, color = color)) + 
+  scale_color_manual(values = c("lightcoral", "darkred"), name = "Net Pickups") +
+  #scale_color_gradient2(low = "lightpink", mid = "darkred", high = "darkred", midpoint = 10) +
+  ggtitle("Figure 3a: Geohash Map of Pickups > Dropoffs, June 2016 (12-12:30PM)") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+neg_netmap <- pu_map + geom_point(data = neg_counts, size = 0.03, na.rm = TRUE, shape = 0,
+                                       aes(x = lon, y = lat, color = color)) + 
+  scale_color_manual(values = c("navyblue", "dodgerblue"), name = "Net Pickups") +
+  #scale_color_gradient2(low = "lightpink", mid = "darkred", high = "darkred", midpoint = 10) +
+  ggtitle("Figure 3b: Geohash Map of Dropoffs > Pickups, June 2016 (12-12:30PM)") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
 ```
 
 ```{r, warnings = FALSE}
 PUGH_map; DOGH_map
+pos_netmap
+neg_netmap
+```
+
+```{r}
+tiff(file = "Images/pos_netmap", width = 4, height = 4, units = "in", res = 300, pointsize = 6)
+pos_netmap
+dev.off()
+
+tiff(file = "Images/neg_netmap", width = 4, height = 4, units = "in", res = 300, pointsize = 6)
+neg_netmap
+dev.off()
 ```
 
 
