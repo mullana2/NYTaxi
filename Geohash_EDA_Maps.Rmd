@@ -22,6 +22,7 @@ library(cowplot)
 library(devtools)
 library(geohash)
 library(tidyverse)
+library(geohash)
 
 ## Retrieving yellow taxi data for June 2016
 URL <- "https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page"
