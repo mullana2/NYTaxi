@@ -44,6 +44,7 @@ full_counts <- data.frame(geohash = NA)
 i = 1
 
 for(link in yellow09){
+  link <- yellow09[i]
   raw_data <- read.csv(link)
   short_data <- raw_data[,c(2,3,6,7,10,11)]
   firstsplit <- short_data %>% separate(Trip_Pickup_DateTime, sep = " ", n = 2,
@@ -97,9 +98,12 @@ for(link in yellow09){
   all_counts$dropoffs <- ifelse(is.na(all_counts$dropoffs), 0, all_counts$dropoffs)
   all_counts$netdiff <- all_counts$pickups - all_counts$dropoffs
   final_counts <- data.frame(geohash = all_counts$geohash, netdiff = all_counts$netdiff)
-  full_counts <- merge(full_counts, final_counts, by = "geohash", all = TRUE, suffixes = c("", i))
+  full_counts <- merge(full_counts, final_counts, by.x = "geohash", by.y = "geohash",
+                       all.y = TRUE, suffixes = c("", i))
+  duplicates <- duplicated(full_counts$geohash)
+  full_counts <- full_counts[!duplicates,]
   i = i+1
-  i
+
   rm(raw_data); rm(short_data); rm(firstsplit); rm(clean_data)
   rm(pu_data_raw); rm(pu_data); rm(pu_clean); rm(pu_main); rm(pu_counts)
   rm(do_data_raw); rm(do_data); rm(do_clean); rm(do_main); rm(do_counts)
