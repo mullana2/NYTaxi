@@ -229,7 +229,6 @@ for(link in yellow1516){
   rm(do_data_raw); rm(do_data); rm(do_clean); rm(do_main); rm(do_counts)
   rm(all_counts); rm(final_counts)
 }
-
 ```
 
 2009: Col 2,3,6,7,10,11
@@ -256,4 +255,67 @@ pickup_latitude
 dropoff_longitude
 dropoff_latitude
 
+```{r}
+for(i in 1:6){
+  link <- yellow1516[i+12]
+  raw_data <- read.csv(link)
+  short_data <- raw_data[,c(2,3,6,7,10,11)]
+  firstsplit <- short_data %>% separate(tpep_pickup_datetime, sep = " ", n = 2,
+                                                 into = c("pickup_date", "pickup_time")) %>%
+                                        separate(tpep_dropoff_datetime, sep = " ", n = 2,
+                                                 into = c("dropoff_date", "dropoff_time"))
+  firstsplit$PU_weekday <- weekdays(as.Date(firstsplit$pickup_date))
+  firstsplit$DO_weekday <- weekdays(as.Date(firstsplit$dropoff_date))
+  clean_data <- firstsplit %>% separate(pickup_time, sep = ":", n = 3,
+                                                  into = c("PU_hour", "PU_minute", "PU_second")) %>%
+                                         separate(pickup_date, sep = "-", n = 3,
+                                                  into = c("PU_year", "PU_month", "PU_day")) %>%
+                                         separate(dropoff_time, sep = ":", n = 3,
+                                                  into = c("DO_hour", "DO_minute", "DO_second")) %>%
+                                         separate(dropoff_date, sep = "-", n = 3,
+                                                  into = c("DO_year", "DO_month", "DO_day"))
+  
+  
+  pu_data_raw <- subset(clean_data, subset = PU_hour == 12 & PU_weekday == "Monday")
+  pu_data <- pu_data_raw[,c(1:6,9,13,14,17)]
+  pu_clean <- subset(pu_data, subset = pickup_latitude != 0 & pickup_longitude != 0)
+  
+  lat_mid <- quantile(pu_clean$pickup_latitude, probs = c(.0005, 0.9995))
+  lon_mid <- quantile(pu_clean$pickup_longitude, probs = c(.0005, 0.9995))
+
+  pu_main <- subset(pu_clean, subset = pickup_latitude > lat_mid[[1]] & pickup_latitude < lat_mid[[2]])
+  pu_main <- subset(pu_main, subset = pickup_latitude > lat_mid[[1]] &
+                      pickup_latitude < lat_mid[[2]])
+  pu_main$geohash <- geohash::gh_encode(lats = pu_main$pickup_latitude,
+                                          lngs = pu_main$pickup_longitude,
+                                   precision = 7)
+  pu_counts <- pu_main %>% group_by(geohash, PU_day) %>% summarise(pickups = n())
+  
+  do_data_raw <- subset(clean_data, subset = DO_hour == 12 & DO_weekday == "Monday")
+  do_data <- do_data_raw[,c(7:12,15,16,18)]
+  do_clean <- subset(do_data, subset = dropoff_latitude != 0 & dropoff_longitude != 0)
+
+  do_main <- subset(do_clean, subset = dropoff_latitude > lat_mid[[1]] & dropoff_latitude < lat_mid[[2]])
+  do_main <- subset(do_main, subset = dropoff_latitude > lat_mid[[1]] &
+                      dropoff_latitude < lat_mid[[2]])
+  do_main$geohash <- geohash::gh_encode(lats = do_main$dropoff_latitude,
+                                        lngs = do_main$dropoff_longitude, precision = 7)
+  do_counts <- do_main %>% group_by(geohash) %>% summarise(dropoffs = n())
+  
+  all_counts <- merge(pu_counts, do_counts, by = "geohash", all = TRUE)
+  all_counts$pickups <- ifelse(is.na(all_counts$pickups), 0, all_counts$pickups)
+  all_counts$dropoffs <- ifelse(is.na(all_counts$dropoffs), 0, all_counts$dropoffs)
+  all_counts$netdiff <- all_counts$pickups - all_counts$dropoffs
+  final_counts <- data.frame(geohash = all_counts$geohash, netdiff = all_counts$netdiff)
+  full_counts <- merge(full_counts, final_counts, by.x = "geohash", by.y = "geohash",
+                       all.y = TRUE, suffixes = c("", i))
+  duplicates <- duplicated(full_counts$geohash)
+  full_counts <- full_counts[!duplicates,]
+  
+  rm(raw_data); rm(short_data); rm(firstsplit); rm(clean_data)
+  rm(pu_data_raw); rm(pu_data); rm(pu_clean); rm(pu_main); rm(pu_counts)
+  rm(do_data_raw); rm(do_data); rm(do_clean); rm(do_main); rm(do_counts)
+  rm(all_counts); rm(final_counts)
+}
+```
 
