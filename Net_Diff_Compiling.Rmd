@@ -256,13 +256,14 @@ dropoff_longitude
 dropoff_latitude
 
 ```{r}
-for(i in 1:6){
-  link <- yellow1516[i+12]
+full_counts <- data.frame(geohash = NA)
+for(i in 19:30){
+  link <- yellow_data[i]
   raw_data <- read.csv(link)
   short_data <- raw_data[,c(2,3,6,7,10,11)]
-  firstsplit <- short_data %>% separate(tpep_pickup_datetime, sep = " ", n = 2,
+  firstsplit <- short_data %>% separate(pickup_datetime, sep = " ", n = 2,
                                                  into = c("pickup_date", "pickup_time")) %>%
-                                        separate(tpep_dropoff_datetime, sep = " ", n = 2,
+                                        separate(dropoff_datetime, sep = " ", n = 2,
                                                  into = c("dropoff_date", "dropoff_time"))
   firstsplit$PU_weekday <- weekdays(as.Date(firstsplit$pickup_date))
   firstsplit$DO_weekday <- weekdays(as.Date(firstsplit$dropoff_date))
