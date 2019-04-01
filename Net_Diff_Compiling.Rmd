@@ -257,7 +257,7 @@ dropoff_latitude
 
 ```{r}
 full_counts <- data.frame(geohash = NA)
-                                  for(i in c(55:66,43:54,31:42)){
+for(i in 67:78){
   link <- yellow_data[i]
   raw_data <- read.csv(link)
   short_data <- raw_data[,c(2,3,6,7,10,11)]
