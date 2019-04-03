@@ -106,9 +106,11 @@ plot(1:89,min_cell[2:90], type = "l")
 ```{r}
 ## Basic KNN to predict June 2016
 MayJun_16 <- nd09_16[,c(1,89,90)]
-hashes <- gh_decode(Jun_16$geohash)
-MayJun_16$Longitude <- scale(hashes$lng)
-MayJun_16$Latitude <- scale(hashes$lat)
+hashes <- gh_decode(MayJun_16$geohash)
+MayJun_16$Longitude <- hashes$lng
+MayJun_16$Latitude <- hashes$lat
+MayJun_16$Long0 <- scale(MayJun_16$Longitude)
+MayJun_16$Lat0 <- scale(MayJun_16$Latitude)
 
 size <- length(Jun_16[,1])
 train_size <- size * 0.8
@@ -117,7 +119,7 @@ train_data <- MayJun_16[train_index,]
 test_data <- MayJun_16[-train_index,]
 
 Jun16_control <- trainControl(method = "cv", number = 10, classProbs = TRUE)
-Jun16_knn <- train(Jun16~Longitude+Latitude, data = train_data, method = "knn",
+Jun16_knn <- train(Jun16~Long0+Lat0, data = train_data, method = "knn",
                 trControl = Jun16_control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
 Jun16_knn # k = 4, RMSE = 9.701, Rsq = 0.544
 
@@ -126,11 +128,11 @@ sqrt(mean((test_data$Jun16 - Jun16_preds)^2)) # 14.462
 
 #####---------------------------------
 ## Using May 2016 to predict June 2016
-MayJun16_knn <- train(May16~Longitude+Latitude, data = MayJun_16, method = "knn",
+MayJun16_knn <- train(May16~Long0+Lat0, data = MayJun_16, method = "knn",
                 trControl = Jun16_control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
 MayJun16_knn # k = 4, RMSE = 12.772, Rsq = 0.550
 
-MayJun_preds <- predict(MayJun16_knn, newdata = MayJun_16[,3:5])
+MayJun_preds <- predict(MayJun16_knn, newdata = MayJun_16[,c(3,6,7)])
 sqrt(mean((MayJun_16$Jun16 - MayJun_preds)^2)) # RMSE = 20.642
 
 MayJun_preds2 <- predict(MayJun16_knn, newdata = test_data)
@@ -140,11 +142,11 @@ sqrt(mean((test_data$Jun16 - MayJun_preds2)^2)) # RMSE = 9.437
 ## Using Average from 2009-2016: All Months
 
 MayJun_16$AllMeans <- rowMeans(nd09_16[,-c(1,90)])
-AllMeans_knn <- train(AllMeans~Longitude+Latitude, data = MayJun_16, method = "knn",
+AllMeans_knn <- train(AllMeans~Long0+Lat0, data = MayJun_16, method = "knn",
                 trControl = Jun16_control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
 AllMeans_knn # k = 4, RMSE = 11.619, Rsq = 0.643
 
-AllMeans_preds <- predict(AllMeans_knn, newdata = MayJun_16[,3:5])
+AllMeans_preds <- predict(AllMeans_knn, newdata = MayJun_16[,c(3,6,7)])
 sqrt(mean((MayJun_16$Jun16 - AllMeans_preds)^2)) # RMSE = 9.569
 
 AllMeans_preds2 <- predict(AllMeans_knn, newdata = test_data)
@@ -154,11 +156,11 @@ sqrt(mean((test_data$Jun16 - AllMeans_preds2)^2)) # RMSE = 10.034
 ## Using Average from 2009-2016: June Only
 
 MayJun_16$JuneMeans <- rowMeans(nd09_16[,c(7,19,31,43,55,66,78)])
-JuneMeans_knn <- train(JuneMeans~Longitude+Latitude, data = MayJun_16, method = "knn",
+JuneMeans_knn <- train(JuneMeans~Long0+Lat0, data = MayJun_16, method = "knn",
                 trControl = Jun16_control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
 JuneMeans_knn # k = 4, RMSE = 12.209, Rsq = 0.664
 
-JuneMeans_preds <- predict(JuneMeans_knn, newdata = MayJun_16[,3:5])
+JuneMeans_preds <- predict(JuneMeans_knn, newdata = MayJun_16[,c(3,6,7)])
 sqrt(mean((MayJun_16$Jun16 - JuneMeans_preds)^2)) # RMSE = 10.428
 
 JuneMeans_preds2 <- predict(JuneMeans_knn, newdata = test_data)
@@ -206,35 +208,258 @@ for(month in Months16){
 ```
 
 ```{r}
-## Visual Comparison of Observed and Predicted Net Diff
+#####-------------------
+## Maps of Observed Data
+#####-------------------
 
 MayJun_16$AllMeans <- rowMeans(nd09_16[,-c(1,90)])
+control <- trainControl(method = "cv", number = 10, classProbs = TRUE)
 AllMeans_knn <- train(AllMeans~Longitude+Latitude, data = MayJun_16, method = "knn",
-                trControl = Jun16_control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
+                trControl = control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
 
 MayJun_16$JunePreds <- predict(AllMeans_knn, newdata = MayJun_16[,3:5])
+
+#####----------------
+## Full Map of NYC
 
 mlat <- mean(MayJun_16$Latitude)
 mlon <- mean(MayJun_16$Longitude)
 map_raw <- get_map(location = c(mlon, mlat), zoom = 11, scale = 2)
 map <- ggmap(map_raw, legend = "none")
 
+obs_midrange <- quantile(MayJun_16$Jun16, probs = c(.05, .95))
+MayJun_16$obscolor <- cut(MayJun_16$Jun16,
+                          breaks = c(-300, -15,-1,0,14,200),
+                          labels = c("(-229,-15)", "(-14,-1)", "0", "(1,14)", "(15,200)"))
+
 observed_map <- map + geom_point(data = MayJun_16, size = 0.03, na.rm = TRUE, shape = 0,
-                                       aes(x = Longitude, y = Latitude, color = Jun16)) + 
-  scale_color_manual(values = c("lightcoral", "darkred"), name = "Net Pickups") +
-  #scale_color_gradient2(low = "lightpink", mid = "darkred", high = "darkred", midpoint = 10) +
-  ggtitle("Figure 3a: Geohash Map of Pickups > Dropoffs, June 2016 (12-12:30PM)") +
+                                       aes(x = Longitude, y = Latitude, color = obscolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("") +
   xlab("") + ylab("") +
   theme(axis.line = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), plot.title = element_text(size = 5),
         legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+observed_map
+
+##------------------------
+## Zoomed Map of Manhattan
+zoom_map_raw <- get_map(location = c(-73.96, 40.76), zoom = 12, scale = 2)
+zoom_map <- ggmap(zoom_map_raw, legend = "none")
+zoom_obs_map <- zoom_map + geom_point(data = MayJun_16, size = 0.03, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = obscolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+zoom_obs_map
+
+##----------------------
+## Split Maps of Positive v. Negative NetDiff
+
+Jun16_pos <- subset(MayJun_16, subset = Jun16 >= 0)
+Jun16_neg <- subset(MayJun_16, subset = Jun16 < 0)
+
+zoom_pos_map <- zoom_map + geom_point(data = Jun16_pos, size = 0.3, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = obscolor)) + 
+  scale_color_manual(values = c("grey", "dodgerblue", "navyblue"), name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+zoom_neg_map <- zoom_map + geom_point(data = Jun16_neg, size = 0.3, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = obscolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral"), name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+zoom_pos_map; zoom_neg_map
+```
+
+```{r}
+#####-----------------------
+## Maps of Predicted Data
+#####-----------------------
+
+pred_midrange <- quantile(MayJun_16$JunePreds, probs = c(.05, .95))
+MayJun_16$predcolor <- cut(MayJun_16$JunePreds,
+                          breaks = c(-300, -14.5,-1,0,14.5,200),
+                          labels = c("(-229,-15)", "(-14,-1)", "0", "(1,14)", "(15,200)"))
+
+predict_map <- map + geom_point(data = MayJun_16, size = 0.03, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = predcolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+predict_map; observed_map
+
+##------------------------
+## Zoomed Map of Manhattan Predictions
+
+zoom_pred_map <- zoom_map + geom_point(data = MayJun_16, size = 0.03, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = predcolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+zoom_pred_map; zoom_obs_map
+
+##----------------------
+## Split Maps of Predicted Positive v. Negative NetDiff
+
+Jun16_pospred <- subset(MayJun_16, subset = JunePreds >= -.5)
+Jun16_negpred <- subset(MayJun_16, subset = JunePreds < -.5)
+
+zoom_pospred_map <- zoom_map + geom_point(data = Jun16_pospred, size = 0.3, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = predcolor)) + 
+  scale_color_manual(values = c("grey", "dodgerblue", "navyblue"), name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+zoom_negpred_map <- zoom_map + geom_point(data = Jun16_negpred, size = 0.3, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = predcolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral"), name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+zoom_pospred_map; zoom_pos_map
+zoom_negpred_map; zoom_neg_map
+```
+
+```{r}
+#####---------------------------
+## Maps With Larger "Grey" Range
+#####---------------------------
+
+MayJun_16$obscolor2 <- cut(MayJun_16$Jun16,
+                          breaks = c(-300, -15,-4,0,3,200),
+                          labels = c("(-229,-15)", "(-14,-4)", "(-3,3)", "(4,14)", "(15,200)"))
+MayJun_16$predcolor2 <- cut(MayJun_16$JunePreds,
+                          breaks = c(-300, -14.5,-3,3,14.5,200),
+                          labels = c("(-229,-15)", "(-14,-4)", "(-3,3)", "(4,14)", "(15,200)"))
+
+#####-----------------------
+## Full Scale Maps
+
+observed_map2 <- map + geom_point(data = MayJun_16, size = 0.03, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = obscolor2)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+predict_map2 <- map + geom_point(data = MayJun_16, size = 0.03, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = predcolor2)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+observed_map2; predict_map2
+#####----------------
+## Zoomed Maps
+
+zoom_obs_map2 <- zoom_map + geom_point(data = MayJun_16, size = 0.03, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = obscolor2)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+zoom_pred_map2 <- zoom_map + geom_point(data = MayJun_16, size = 0.03, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = predcolor2)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+zoom_pred_map2; zoom_obs_map2
+#####----------------
+## Split Pos/Neg Maps
+
+Jun16_pos2 <- subset(MayJun_16, subset = Jun16 >= 0)
+Jun16_neg2 <- subset(MayJun_16, subset = Jun16 < 0)
+Jun16_pospred2 <- subset(MayJun_16, subset = JunePreds >= -.5)
+Jun16_negpred2 <- subset(MayJun_16, subset = JunePreds < -.1)
+
+zoom_pos_map2 <- zoom_map + geom_point(data = Jun16_pos2, size = 0.3, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = obscolor2)) + 
+  scale_color_manual(values = c("grey", "dodgerblue", "navyblue"), name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+zoom_neg_map2 <- zoom_map + geom_point(data = Jun16_neg2, size = 0.3, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = obscolor2)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey"), name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+
+
+zoom_pospred_map2 <- zoom_map + geom_point(data = Jun16_pospred2, size = 0.3, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = predcolor2)) + 
+  scale_color_manual(values = c("grey", "dodgerblue", "navyblue"), name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+zoom_negpred_map2 <- zoom_map + geom_point(data = Jun16_negpred2, size = 0.3, na.rm = TRUE, shape = 0,
+                                       aes(x = Longitude, y = Latitude, color = predcolor2)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey"), name = "Net Pickups") +
+  ggtitle("") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 5),
+        legend.title = element_text(size = 5), legend.text = element_text(size = 4))
+
+zoom_pospred_map2; zoom_pos_map2
+zoom_negpred_map2; zoom_neg_map2
 ```
 
 
-To Do:
 
--Plot map to compare observed v. predicted
--Maybe try to predict pos v negative net differences as classification problem
 
 
 
