@@ -231,7 +231,10 @@ observed_map <- map + geom_point(data = MayJun_16, size = 0.03, na.rm = TRUE, sh
 ```
 
 
+To Do:
 
+-Plot map to compare observed v. predicted
+-Maybe try to predict pos v negative net differences as classification problem
 
 
 
