@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r}
@@ -70,7 +70,7 @@ full09_16 <- nd09_16[full_counts,]
 half09_16 <- nd09_16[half_counts,]
 ```
 
-```{r}
+```{r, eval = FALSE}
 ## EDA for time series
 set.seed(123456)
 size <- length(full09_16[,1])
@@ -103,7 +103,7 @@ min_cell <- full09_16[which.min(trend),]
 plot(1:89,min_cell[2:90], type = "l")
 ```
 
-```{r}
+```{r, eval = FALSE}
 ## Basic KNN to predict June 2016
 MayJun_16 <- nd09_16[,c(1,89,90)]
 hashes <- gh_decode(MayJun_16$geohash)
@@ -167,7 +167,7 @@ JuneMeans_preds2 <- predict(JuneMeans_knn, newdata = test_data)
 sqrt(mean((test_data$Jun16 - JuneMeans_preds2)^2)) # RMSE = 10.944
 ```
 
-```{r}
+```{r, eval = FALSE}
 ## Determining RSME for Prediction of All 2016 Months under 3 Methods
 
 Months16 <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun")
@@ -207,7 +207,7 @@ for(month in Months16){
 
 ```
 
-```{r}
+```{r, eval = FALSE}
 #####-------------------
 ## Maps of Observed Data
 #####-------------------
@@ -285,7 +285,7 @@ zoom_neg_map <- zoom_map + geom_point(data = Jun16_neg, size = 0.3, na.rm = TRUE
 zoom_pos_map; zoom_neg_map
 ```
 
-```{r}
+```{r, eval = FALSE}
 #####-----------------------
 ## Maps of Predicted Data
 #####-----------------------
@@ -348,7 +348,7 @@ zoom_pospred_map; zoom_pos_map
 zoom_negpred_map; zoom_neg_map
 ```
 
-```{r}
+```{r, eval = FALSE}
 #####---------------------------
 ## Maps With Larger "Grey" Range
 #####---------------------------
@@ -458,6 +458,122 @@ zoom_pospred_map2; zoom_pos_map2
 zoom_negpred_map2; zoom_neg_map2
 ```
 
+```{r}
+#### Subset to Only Manhattan
+full_hash <- gh_decode(nd09_16$geohash)
+nd09_16$Lat <- full_hash$lat
+nd09_16$Lon <- full_hash$lng
+
+Jun16 <- nd09_16[,c(1,89:92)]
+Jun16_Manhat <- subset(Jun16, subset = Lat >= 40.7 & Lat <= 40.84 & Lon >= -74.025 & Lon <= -73.92)
+Jun16_Manhat$Long0 <- scale(Jun16_Manhat$Lon)
+Jun16_Manhat$Lat0 <- scale(Jun16_Manhat$Lat)
+
+size <- length(Jun16_Manhat[,1])
+train_size <- size * 0.8
+train_index <- sample(size, train_size)
+train_data <- Jun16_Manhat[train_index,]
+test_data <- Jun16_Manhat[-train_index,]
+
+Jun16_control <- trainControl(method = "cv", number = 10, classProbs = TRUE)
+Jun16_knn <- train(Jun16~Long0+Lat0, data = train_data, method = "knn",
+                trControl = Jun16_control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
+Jun16_knn # k = 4, RMSE = 9.701, Rsq = 0.658
+
+Jun16_preds <- predict(Jun16_knn, newdata = test_data)
+sqrt(mean((test_data$Jun16 - Jun16_preds)^2)) # 14.462
+
+#####---------------------------------
+## Using May 2016 to predict June 2016
+MayJun16_knn <- train(May16~Long0+Lat0, data = Jun16_Manhat, method = "knn",
+                trControl = Jun16_control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
+MayJun16_knn # k = 12, RMSE = 16.091, Rsq = 0.636
+
+MayJun_preds <- predict(MayJun16_knn, newdata = Jun16_Manhat[,c(2,6,7)])
+sqrt(mean((Jun16_Manhat$Jun16/4 - MayJun_preds/4)^2)) # RMSE = 20.642
+
+MayJun_preds2 <- predict(MayJun16_knn, newdata = test_data)
+sqrt(mean((test_data$Jun16 - MayJun_preds2)^2)) # RMSE = 9.437
+
+#####-------------------------------------
+## Using Average from 2009-2016: All Months
+
+ndsub <- subset(nd09_16, subset = Lat >= 40.7 & Lat <= 40.84 & Lon >= -74.025 & Lon <= -73.92)
+Jun16_Manhat$AllMeans <- rowMeans(ndsub[,-c(1,90:92)])
+AllMeans_knn <- train(AllMeans~Long0+Lat0, data = Jun16_Manhat, method = "knn",
+                trControl = Jun16_control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
+AllMeans_knn # k = 8, RMSE = 14.133, Rsq = 0.737
+
+AllMeans_preds <- predict(AllMeans_knn, newdata = Jun16_Manhat[,c(2,6,7)])
+sqrt(mean((Jun16_Manhat$Jun16/4 - AllMeans_preds/4)^2)) # RMSE = 9.569
+
+AllMeans_preds2 <- predict(AllMeans_knn, newdata = test_data)
+sqrt(mean((test_data$Jun16 - AllMeans_preds2)^2)) # RMSE = 10.034
+
+#####-------------------------------------
+## Using Average from 2009-2016: June Only
+
+Jun16_Manhat$JuneMeans <- rowMeans(ndsub[,c(7,19,31,43,55,66,78)])
+JuneMeans_knn <- train(JuneMeans~Long0+Lat0, data = Jun16_Manhat, method = "knn",
+                trControl = Jun16_control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
+JuneMeans_knn # k = 4, RMSE = 12.209, Rsq = 0.664
+
+JuneMeans_preds <- predict(JuneMeans_knn, newdata = Jun16_Manhat[,c(2,6,7)])
+sqrt(mean((Jun16_Manhat$Jun16/4 - JuneMeans_preds/4)^2)) # RMSE = 10.428
+
+JuneMeans_preds2 <- predict(JuneMeans_knn, newdata = test_data)
+sqrt(mean((test_data$Jun16 - JuneMeans_preds2)^2))
+
+
+#####----------------------------------------------------------------------------
+## Graphing Manhattan Only Predictions
+#####----------------------------------------------------------------------------
+
+zoom_map_raw <- get_map(location = c(-73.98, 40.76), zoom = 12, scale = 2)
+zoom_map <- ggmap(zoom_map_raw, legend = "none")
+
+Jun16_Manhat$AllMeans <- rowMeans(ndsub[,-c(1,90:92)])
+control <- trainControl(method = "cv", number = 10, classProbs = TRUE)
+AllMeans_knn <- train(AllMeans~Long0+Lat0, data = Jun16_Manhat, method = "knn",
+                trControl = control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
+
+Jun16_Manhat$JunePreds <- predict(AllMeans_knn, newdata = Jun16_Manhat[,c(2,6,7)])
+
+Jun16_Manhat$obscolor <- cut(Jun16_Manhat$Jun16,
+                          breaks = c(-300, -15,-4,0,3,200),
+                          labels = c("(-77,-6)", "(-5,-1)", 0, "(1,5)", "(6,67)"))
+Jun16_Manhat$predcolor <- cut(Jun16_Manhat$JunePreds,
+                          breaks = c(-300, -14.5,-3,0.001,14.5,200),
+                          labels = c("(-77,-6)", "(-5,-1)", 0, "(1,5)", "(6,67)"))
+
+
+manh_obs_map <- zoom_map + geom_point(data = Jun16_Manhat, size = 0.7, na.rm = TRUE, shape = 15,
+                                       aes(x = Lon, y = Lat, color = obscolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("Observed Net Pickups for Manhattan: Monday 12-1PM") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 10, hjust = 0.5),
+        legend.title = element_text(size = 8), legend.text = element_text(size = 6))
+
+manh_pred_map <- zoom_map + geom_point(data = Jun16_Manhat, size = 0.7, na.rm = TRUE, shape = 15,
+                                       aes(x = Lon, y = Lat, color = predcolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("Predicted Net Pickups for Manhattan: Monday 12-1PM") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 10, hjust = 0.5),
+        legend.title = element_text(size = 8), legend.text = element_text(size = 6))
+
+manh_obs_map; manh_pred_map
+
+ggsave(filename = "Images/Manhattan_ObsNetMap", plot = manh_obs_map,
+       width = 6, height = 6, device = "jpeg")
+ggsave(filename = "Images/Manhattan_PredNetMap", plot = manh_pred_map,
+       width = 6, height = 6, device = "jpeg")
+```
 
 
 
