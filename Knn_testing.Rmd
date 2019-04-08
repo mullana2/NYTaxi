@@ -569,9 +569,9 @@ manh_pred_map <- zoom_map + geom_point(data = Jun16_Manhat, size = 0.7, na.rm = 
 
 manh_obs_map; manh_pred_map
 
-ggsave(filename = "Images/Manhattan_ObsNetMap", plot = manh_obs_map,
+ggsave(filename = "Images/Manhattan_ObsNetMap.jpeg", plot = manh_obs_map,
        width = 6, height = 6, device = "jpeg")
-ggsave(filename = "Images/Manhattan_PredNetMap", plot = manh_pred_map,
+ggsave(filename = "Images/Manhattan_PredNetMap.jpeg", plot = manh_pred_map,
        width = 6, height = 6, device = "jpeg")
 ```
 
