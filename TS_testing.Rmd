@@ -1,0 +1,114 @@
+---
+title: "TS_testing"
+author: "Aidan Mullan"
+date: "4/9/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(caret)
+library(dplyr)
+library(e1071)
+library(geohash)
+library(stringr)
+library(ggplot2)
+library(ggmap)
+library(forecast)
+```
+
+
+```{r}
+## Read in data for each year, add year into column names
+nd09 <- read.csv("Data/NetDiff_Mon12/netdiff2009.csv")[,-1]
+names(nd09) <- c("geohash", "Jan09", "Feb09", "Mar09", "Apr09", "May09", "Jun09", "Jul09", "Aug09",
+                 "Sep09", "Oct09", "Nov09", "Dec09")
+nd10 <-  read.table("Data/NetDiff_Mon12/netdiff2010", sep = ",", header = TRUE)[,-1]
+names(nd10) <- c("geohash", "Jan10", "Feb10", "Mar10", "Apr10", "May10", "Jun10", "Jul10", "Aug10",
+                 "Sep10", "Oct10", "Nov10", "Dec10")
+temp11_13 <-  read.table("Data/NetDiff_Mon12/netdiff201113,csv", sep = ",", header = TRUE)[,-1]
+nd11 <- temp11_13[,1:13]; nd12 <- temp11_13[,c(1,14:25)]; nd13 <- temp11_13[,c(1,26:36)]
+names(nd11) <- c("geohash", "Jan11", "Feb11", "Mar11", "Apr11", "May11", "Jun11", "Jul11", "Aug11",
+                 "Sep11", "Oct11", "Nov11", "Dec11")
+names(nd12) <- c("geohash", "Jan12", "Feb12", "Mar12", "Apr12", "May12", "Jun12", "Jul12", "Aug12",
+                 "Sep12", "Oct12", "Nov12", "Dec12")
+names(nd13) <- c("geohash", "Jan13", "Feb13", "Mar13", "Apr13", "May13", "Jun13", "Jul13", "Aug13",
+                 "Sep13", "Oct13", "Nov13")
+nd14 <- read.csv("Data/NetDiff_Mon12/netdiff2014.csv")[,-1]
+names(nd14) <- c("geohash", "Jan14", "Feb14", "Mar14", "Apr14", "May14", "Jun14", "Jul14", "Aug14",
+                 "Sep14", "Oct14", "Nov14", "Dec14")
+nd15 <- read.csv("Data/NetDiff_Mon12/netdiff15.csv")[,-1]
+names(nd15) <- c("geohash", "Jan15", "Feb15", "Mar15", "Apr15", "May15", "Jun15", "Jul15", "Aug15",
+                 "Sep15", "Oct15", "Nov15", "Dec15")
+nd16 <- read.csv("Data/NetDiff_Mon12/netdiff2016")[,-1]
+names(nd16) <- c("geohash", "Jan16", "Feb16", "Mar16", "Apr16", "May16", "Jun16")
+```
+
+```{r}
+## Merge data from each year by geohash ID
+nd09_10 <- merge(nd09, nd10, by = "geohash", all = TRUE)
+nd09_11 <- merge(nd09_10, nd11, by = "geohash", all = TRUE)
+nd09_12 <- merge(nd09_11, nd12, by = "geohash", all = TRUE)
+nd09_13 <- merge(nd09_12, nd13, by = "geohash", all = TRUE)
+nd09_14 <- merge(nd09_13, nd14, by = "geohash", all = TRUE)
+nd09_15 <- merge(nd09_14, nd15, by = "geohash", all = TRUE)
+nd09_16 <- merge(nd09_15, nd16, by = "geohash", all = TRUE)
+
+## Identify months where a cell had no data
+miss_index <- is.na(nd09_16[,-1])
+nd09_16[is.na(nd09_16)] <- 0
+
+full_hash <- gh_decode(nd09_16$geohash)
+nd09_16$Lat <- full_hash$lat
+nd09_16$Lon <- full_hash$lng
+
+nd_Manhat <- subset(nd09_16, subset = Lat >= 40.7 & Lat <= 40.84 & Lon >= -74.025 & Lon <= -73.92)
+```
+
+```{r}
+test <- numeric(88)
+
+for(i in 1:88){
+  test[i] <- nd_Manhat[100,-c(1,90:92)][1,i]
+}
+
+ts.test <- ts(test)
+plot(ts.test)
+mod <- auto.arima(ts.test)
+a <- forecast(mod, h = 1)
+a$mean[1]
+a <- predict(mod, n.ahead = 1)
+nd_Manhat[100,90]
+```
+
+```{r}
+Manhat_train <- nd_Manhat[,-c(1,90:92)]
+size <- nrow(Manhat_train)
+ts_preds_strict <- numeric(size)
+ts_preds_free <- numeric(size)
+for(i in 1:size){
+  cell <- numeric(88)
+  for(j in 1:88){
+    cell[j] <- Manhat_train[i,j]
+  }
+  cell_ts <- ts(cell)
+  cell_model_strict <- auto.arima(cell_ts, max.order = 10, max.D = 12,
+                           ic = "aic", allowmean = F, allowdrift = F)
+  cell_model_free <- auto.arima(cell_ts, max.order = 10, max.D = 12,
+                           ic = "aic", allowmean = T, allowdrift = T)
+  ts_preds_strict[i] <- forecast(cell_model_strict, h = 1)$mean[1]
+  ts_preds_free[i] <- forecast(cell_model_free, h = 1)$mean[1]
+  print(i)
+}
+
+cor(ts_preds_strict, nd_Manhat[,90])^2
+cor(ts_preds_free, nd_Manhat[,90])^2
+
+sqrt(mean((nd_Manhat[,90]/4 - ts_preds_strict/4)^2))
+sqrt(mean((nd_Manhat[,90]/4 - ts_preds_free/4)^2))
+```
+
+
