@@ -104,11 +104,9 @@ for(i in 1:size){
   print(i)
 }
 
-cor(ts_preds_strict, nd_Manhat[,90])^2
-cor(ts_preds_free, nd_Manhat[,90])^2
+cor(ts_preds_strict, nd_Manhat[,90])^2 #R^2 = 0.925
+cor(ts_preds_free, nd_Manhat[,90])^2 # R^2 = 0.929
 
-sqrt(mean((nd_Manhat[,90]/4 - ts_preds_strict/4)^2))
-sqrt(mean((nd_Manhat[,90]/4 - ts_preds_free/4)^2))
 ```
 
 
