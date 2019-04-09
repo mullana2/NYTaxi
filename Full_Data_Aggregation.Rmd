@@ -1,0 +1,57 @@
+---
+title: "Full_Data_Aggregation"
+author: "Aidan Mullan"
+date: "4/9/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+### Load required packages
+library(rvest)
+library(xml2)
+library(magrittr)
+library(stringr)
+library(tidyr)
+library(ggplot2)
+library(ggmap)
+library(gridExtra)
+library(cowplot)
+library(devtools)
+library(tidyverse)
+library(geohash)
+```
+
+```{r}
+URL <- "https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page"
+
+links <- read_html(URL) %>% html_nodes("a") %>% html_attr('href')
+
+yellow_index <- str_detect(links, "yellow_tripdata")
+yellow_data <- links[yellow_index][25:120][c(1:6,13:120)][1:90]
+
+chrono <- rev(c(30:19,42:31,54:43,66:55,78:67))
+yellow09 <- yellow_data[79:90]
+yellow1516 <- yellow_data[c(7:18,1:6)]
+yellow1014 <- yellow_data[chrono]
+```
+
+```{r}
+for(link in yellow09){
+  
+}
+
+for(link in yellow1014){
+  
+}
+
+for(link in yellow1516){
+  
+}
+```
+
+
+
