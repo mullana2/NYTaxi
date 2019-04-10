@@ -18,6 +18,7 @@ library(stringr)
 library(ggplot2)
 library(ggmap)
 library(forecast)
+## AIzaSyA_85iLvvJMp2lLIb1nGzbIYzzsxAZS0hI
 ```
 
 
@@ -108,5 +109,49 @@ cor(ts_preds_strict, nd_Manhat[,90])^2 #R^2 = 0.925
 cor(ts_preds_free, nd_Manhat[,90])^2 # R^2 = 0.929
 
 ```
+
+```{r}
+zoom_map_raw <- get_map(location = c(-73.98, 40.76), zoom = 12, scale = 2)
+zoom_map <- ggmap(zoom_map_raw, legend = "none")
+
+Jun16_Manhat <- nd_Manhat[,90:92]
+
+Jun16_Manhat$JunePreds <- ts_preds_free
+
+Jun16_Manhat$obscolor <- cut(Jun16_Manhat$Jun16,
+                          breaks = c(-300, -15,-4,0,3,200),
+                          labels = c("(-77,-6)", "(-5,-1)", 0, "(1,5)", "(6,67)"))
+Jun16_Manhat$predcolor <- cut(Jun16_Manhat$JunePreds,
+                          breaks = c(-400, -14.5,-3,0.001,14.5,200),
+                          labels = c("(-77,-6)", "(-5,-1)", 0, "(1,5)", "(6,67)"))
+
+
+manh_obs_map <- zoom_map + geom_point(data = Jun16_Manhat, size = 0.7, na.rm = TRUE, shape = 15,
+                                       aes(x = Lon, y = Lat, color = obscolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("Observed Net Pickups for Manhattan: Mon 12-1PM") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 10, hjust = 0.5),
+        legend.title = element_text(size = 8), legend.text = element_text(size = 6))
+
+manh_pred_map <- zoom_map + geom_point(data = Jun16_Manhat, size = 0.7, na.rm = TRUE, shape = 15,
+                                       aes(x = Lon, y = Lat, color = predcolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("SARIMA Predicted Net Pickups for Manhattan: Mon 12-1PM") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 10, hjust = 0.5),
+        legend.title = element_text(size = 8), legend.text = element_text(size = 6))
+
+manh_obs_map; manh_pred_map
+
+
+ggsave(filename = "Images/Manhattan_SARIMAPredMap.jpeg", plot = manh_pred_map,
+       width = 6, height = 6, device = "jpeg")
+```
+
 
 
