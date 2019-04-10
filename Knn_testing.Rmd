@@ -561,7 +561,7 @@ manh_pred_map <- zoom_map + geom_point(data = Jun16_Manhat, size = 0.7, na.rm = 
                                        aes(x = Lon, y = Lat, color = predcolor)) + 
   scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
                      name = "Net Pickups") +
-  ggtitle("Predicted Net Pickups for Manhattan: Monday 12-1PM") +
+  ggtitle("KNN Predicted Net Pickups for Manhattan: Mon 12-1PM") +
   xlab("") + ylab("") +
   theme(axis.line = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), plot.title = element_text(size = 10, hjust = 0.5),
@@ -571,7 +571,7 @@ manh_obs_map; manh_pred_map
 
 ggsave(filename = "Images/Manhattan_ObsNetMap.jpeg", plot = manh_obs_map,
        width = 6, height = 6, device = "jpeg")
-ggsave(filename = "Images/Manhattan_PredNetMap.jpeg", plot = manh_pred_map,
+ggsave(filename = "Images/Manhattan_KNNPredNetMap.jpeg", plot = manh_pred_map,
        width = 6, height = 6, device = "jpeg")
 ```
 
