@@ -41,11 +41,52 @@ yellow1014 <- yellow_data[chrono]
 
 ```{r}
 for(link in yellow09){
-  
+  raw_data <- read.csv(link)
 }
 
 for(link in yellow1014){
+  raw_data <- read.csv(link)
+  short_data <- raw_data[,c(2,3,6,7,10,11)]
+  firstsplit <- short_data %>% separate(pickup_datetime, sep = " ", n = 2,
+                                                 into = c("pickup_date", "pickup_time")) %>%
+                                        separate(dropoff_datetime, sep = " ", n = 2,
+                                                 into = c("dropoff_date", "dropoff_time"))
+  firstsplit$PU_weekday <- weekdays(as.Date(firstsplit$pickup_date))
+  firstsplit$DO_weekday <- weekdays(as.Date(firstsplit$dropoff_date))
+  clean_data <- firstsplit %>% separate(pickup_time, sep = ":", n = 3,
+                                                  into = c("PU_hour", "PU_minute", "PU_second")) %>%
+                                         separate(pickup_date, sep = "-", n = 3,
+                                                  into = c("PU_year", "PU_month", "PU_day")) %>%
+                                         separate(dropoff_time, sep = ":", n = 3,
+                                                  into = c("DO_hour", "DO_minute", "DO_second")) %>%
+                                         separate(dropoff_date, sep = "-", n = 3,
+                                                  into = c("DO_year", "DO_month", "DO_day"))
   
+  pu_data <- clean_data[,c(1:6,13,14,17)]
+  pu_main <- subset(pu_data, subset = pickup_latitude >= 40.7 & pickup_latitude <= 40.84 & 
+                      pickup_longitude >= -74.025 & pickup_longitude <= -73.92)
+
+  pu_main$geohash <- geohash::gh_encode(lats = pu_main$pickup_latitude,
+                                          lngs = pu_main$pickup_longitude,
+                                   precision = 7)
+  pu_main$PU_halfhour <- ifelse(pu_main$PU_minute >= 30, as.numeric(pu_main$PU_hour) + 0.5, pu_main$PU_hour)
+  pu_counts <- pu_main %>% group_by(geohash, PU_weekday, PU_halfhour) %>% summarise(pickups = n())
+  
+  do_data <- clean_data[,c(7:12,15,16,18)]
+  do_main <- subset(do_data, subset = dropoff_latitude >= 40.7 & dropoff_latitude <= 40.84 & 
+                      dropoff_longitude >= -74.025 & dropoff_longitude <= -73.92)
+  do_main$geohash <- geohash::gh_encode(lats = do_main$dropoff_latitude,
+                                          lngs = do_main$dropoff_longitude,
+                                   precision = 7)
+  do_main$DO_halfhour <- ifelse(do_main$DO_minute >= 30, as.numeric(do_main$DO_hour) + 0.5, do_main$DO_hour)
+  do_counts <- do_main %>% group_by(geohash, DO_weekday, DO_halfhour) %>% summarise(dropoffs = n())
+  names(pu_counts) <- c("geohash", "weekday", "halfhour", "pickups")
+  names(do_counts) <- c("geohash", "weekday", "halfhour", "dropoffs")
+  
+  all_counts <- merge(pu_counts, do_counts, by.x = c("geohash", "weekday", "halfhour") , all = TRUE)
+  all_counts$pickups[is.na(all_counts$pickups)] <- 0
+  all_counts$dropoffs[is.na(all_counts$dropoffs)] <- 0
+  all_counts$netdiff <- all_counts$pickups - all_counts$dropoffs
 }
 
 for(link in yellow1516){
