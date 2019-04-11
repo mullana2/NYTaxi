@@ -107,6 +107,8 @@ for(i in 1:size){
 
 cor(ts_preds_strict, nd_Manhat[,90])^2 #R^2 = 0.925
 cor(ts_preds_free, nd_Manhat[,90])^2 # R^2 = 0.929
+
+
 ```
 
 ```{r}
@@ -153,6 +155,8 @@ ggsave(filename = "Images/Manhattan_SARIMAPredMap.jpeg", plot = manh_pred_map,
 ggsave(filename = "Images/Manhattan_ObsNetMap.jpeg", plot = manh_obs_map,
        width = 6, height = 6, device = "jpeg")
 ```
+
+
 
 
 
