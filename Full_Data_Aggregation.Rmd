@@ -130,7 +130,7 @@ for(link in yellow09){
   final_counts <- all_counts[,c(1,8,4,7)]
   
   ## Write count data to new csv
-  name <- str_c("Data/All_Counts/" , substr(link, 62, 66))
+  name <- str_c("Data/All_Counts/" , substr(link, 62, 66), ".csv")
   write.csv(final_counts, file = name)
   print(name)
   ## Erase all created data frames to minimize memory usage
@@ -215,7 +215,7 @@ for(link in yellow1014){
   final_counts <- all_counts[,c(1,8,4,7)]
   
   ## Write count data to new csv
-  name <- str_c("Data/All_Counts/" , substr(link, 62, 66))
+  name <- str_c("Data/All_Counts/" , substr(link, 62, 66), ".csv")
   write.csv(final_counts, file = name)
   
   ## Erase all created data frames to minimize memory usage
@@ -300,7 +300,7 @@ for(link in yellow1516){
   final_counts <- all_counts[,c(1,8,4,7)]
   
   ## Write count data to new csv
-  name <- str_c("Data/All_Counts/" , substr(link, 62, 66))
+  name <- str_c("Data/All_Counts/" , substr(link, 62, 66), ".csv")
   write.csv(final_counts, file = name)
   
   ## Erase all created data frames to minimize memory usage
