@@ -26,6 +26,7 @@ library(geohash)
 ```
 
 ```{r}
+## Retrieve url links to all data set
 URL <- "https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page"
 
 links <- read_html(URL) %>% html_nodes("a") %>% html_attr('href')
@@ -33,6 +34,7 @@ links <- read_html(URL) %>% html_nodes("a") %>% html_attr('href')
 yellow_index <- str_detect(links, "yellow_tripdata")
 yellow_data <- links[yellow_index][25:120][c(1:6,13:120)][1:90]
 
+## Different years use different variable names, subset links into these years
 chrono <- rev(c(30:19,42:31,54:43,66:55,78:67))
 yellow09 <- yellow_data[79:90]
 yellow1516 <- yellow_data[c(7:18,1:6)]
@@ -40,15 +42,29 @@ yellow1014 <- yellow_data[chrono]
 ```
 
 ```{r}
+##---------------------------------------------------------------------------------------
+## Read in Taxi data, clean, and write new csv with counts per cell per week/day/halfhour
+##---------------------------------------------------------------------------------------
+
+## Loop for processing 2009 data
 for(link in yellow09){
+  ## Get desired columns from raw data
   raw_data <- read.csv(link)
+  print("Data retrieved")
   short_data <- raw_data[,c(2,3,6,7,10,11)]
+  
+  ## Retrieve separte fields for date and time
   firstsplit <- short_data %>% separate(Trip_Pickup_DateTime, sep = " ", n = 2,
                                                  into = c("pickup_date", "pickup_time")) %>%
                                         separate(Trip_Dropoff_DateTime, sep = " ", n = 2,
                                                  into = c("dropoff_date", "dropoff_time"))
+  
+  print("First Split")
+  ## Compute day of the week for pickups and dropoffs
   firstsplit$PU_weekday <- weekdays(as.Date(firstsplit$pickup_date))
   firstsplit$DO_weekday <- weekdays(as.Date(firstsplit$dropoff_date))
+  
+  ## Split date and time into year/month/day/hour/minute/second
   clean_data <- firstsplit %>% separate(pickup_time, sep = ":", n = 3,
                                                   into = c("PU_hour", "PU_minute", "PU_second")) %>%
                                          separate(pickup_date, sep = "-", n = 3,
@@ -58,45 +74,89 @@ for(link in yellow09){
                                          separate(dropoff_date, sep = "-", n = 3,
                                                   into = c("DO_year", "DO_month", "DO_day"))
   
+  print("Second Split")
+  ## Subset to only pickup variables
   pu_data <- clean_data[,c(1:6,13,14,17)]
+  pu_data$pickup_latitude <- pu_data$Start_Lat
+  pu_data$pickup_longitude <- pu_data$Start_Lon
+  ## Subset to Manhattan
   pu_main <- subset(pu_data, subset = pickup_latitude >= 40.7 & pickup_latitude <= 40.84 & 
                       pickup_longitude >= -74.025 & pickup_longitude <= -73.92)
 
+  ## Encode latitude/longitude through geohashing
   pu_main$geohash <- geohash::gh_encode(lats = pu_main$pickup_latitude,
                                           lngs = pu_main$pickup_longitude,
                                    precision = 7)
-  pu_main$PU_halfhour <- ifelse(pu_main$PU_minute >= 30, as.numeric(pu_main$PU_hour) + 0.5, pu_main$PU_hour)
-  pu_counts <- pu_main %>% group_by(geohash, PU_weekday, PU_halfhour) %>% summarise(pickups = n())
   
+  ## Create variable for every halfhour and week within the month
+  pu_main$PU_halfhour <- ifelse(pu_main$PU_minute >= 30, as.numeric(pu_main$PU_hour) + 0.5, pu_main$PU_hour)
+  pu_main$PU_weeknum <- ceiling(as.numeric(pu_main$PU_day)/7)
+  
+  ## Retrieve counts for each grid cell for each week/day/halfhour
+  pu_counts <- pu_main %>% group_by(geohash, PU_weeknum, PU_weekday, PU_halfhour) %>% summarise(pickups = n())
+  
+  print("Pickup Counts")
+  ## Repeat above process for dropoffs
   do_data <- clean_data[,c(7:12,15,16,18)]
+  do_data$dropoff_latitude <- do_data$End_Lat
+  do_data$dropoff_longitude <- do_data$End_Lon
   do_main <- subset(do_data, subset = dropoff_latitude >= 40.7 & dropoff_latitude <= 40.84 & 
                       dropoff_longitude >= -74.025 & dropoff_longitude <= -73.92)
   do_main$geohash <- geohash::gh_encode(lats = do_main$dropoff_latitude,
                                           lngs = do_main$dropoff_longitude,
                                    precision = 7)
   do_main$DO_halfhour <- ifelse(do_main$DO_minute >= 30, as.numeric(do_main$DO_hour) + 0.5, do_main$DO_hour)
-  do_counts <- do_main %>% group_by(geohash, DO_weekday, DO_halfhour) %>% summarise(dropoffs = n())
-  names(pu_counts) <- c("geohash", "weekday", "halfhour", "pickups")
-  names(do_counts) <- c("geohash", "weekday", "halfhour", "dropoffs")
+  do_main$DO_weeknum <- ceiling(as.numeric(do_main$DO_day)/7)
+  do_counts <- do_main %>% group_by(geohash, DO_weeknum, DO_weekday, DO_halfhour) %>% summarise(dropoffs = n())
   
-  all_counts <- merge(pu_counts, do_counts, by.x = c("geohash", "weekday", "halfhour") , all = TRUE)
+  print("Dropoff Counts")
+  ## Set identical variable names for pickups and dropoffs
+  names(pu_counts) <- c("geohash", "weeknum", "weekday", "halfhour", "pickups")
+  names(do_counts) <- c("geohash", "weeknum", "weekday", "halfhour", "dropoffs")
+  
+  ## Merge pickup and dropoff data
+  all_counts <- merge(pu_counts, do_counts, by.x = c("geohash", "weeknum", "weekday", "halfhour"),
+                      all = TRUE)
+  
+  ## Set NAs to be 0
   all_counts$pickups[is.na(all_counts$pickups)] <- 0
   all_counts$dropoffs[is.na(all_counts$dropoffs)] <- 0
+  
+  ## Compute difference in pickups and dropoffs
   all_counts$netdiff <- all_counts$pickups - all_counts$dropoffs
-  final_counts <- all_counts[,c(1:3,6)]
+  
+  ## Combine week/weekday indicators
+  all_counts$day <- str_c(substr(all_counts$weekday, 1, 3), all_counts$weeknum)
+  final_counts <- all_counts[,c(1,8,4,7)]
+  
+  ## Write count data to new csv
   name <- str_c("Data/All_Counts/" , substr(link, 62, 66))
   write.csv(final_counts, file = name)
+  print(name)
+  ## Erase all created data frames to minimize memory usage
+  rm(raw_data); rm(short_data); rm(clean_data); rm(firstsplit)
+  rm(pu_data); rm(pu_main); rm(pu_counts); rm(do_data); rm(do_main); rm(do_counts)
+  rm(all_counts); rm(final_counts)
 }
 
+
+## Loop for processing 2010-2014 data
 for(link in yellow1014){
+  ## Get desired columns from raw data
   raw_data <- read.csv(link)
   short_data <- raw_data[,c(2,3,6,7,10,11)]
+  
+  ## Retrieve separte fields for date and time 
   firstsplit <- short_data %>% separate(pickup_datetime, sep = " ", n = 2,
                                                  into = c("pickup_date", "pickup_time")) %>%
                                         separate(dropoff_datetime, sep = " ", n = 2,
                                                  into = c("dropoff_date", "dropoff_time"))
+  
+  ## Compute day of the week for pickups and dropoffs
   firstsplit$PU_weekday <- weekdays(as.Date(firstsplit$pickup_date))
   firstsplit$DO_weekday <- weekdays(as.Date(firstsplit$dropoff_date))
+  
+  ## Split date and time into year/month/day/hour/minute/second
   clean_data <- firstsplit %>% separate(pickup_time, sep = ":", n = 3,
                                                   into = c("PU_hour", "PU_minute", "PU_second")) %>%
                                          separate(pickup_date, sep = "-", n = 3,
@@ -106,16 +166,25 @@ for(link in yellow1014){
                                          separate(dropoff_date, sep = "-", n = 3,
                                                   into = c("DO_year", "DO_month", "DO_day"))
   
+  ## Subset to only pickup variables
   pu_data <- clean_data[,c(1:6,13,14,17)]
+  ## Subset to Manhattan
   pu_main <- subset(pu_data, subset = pickup_latitude >= 40.7 & pickup_latitude <= 40.84 & 
                       pickup_longitude >= -74.025 & pickup_longitude <= -73.92)
 
+  ## Encode latitude/longitude through geohashing
   pu_main$geohash <- geohash::gh_encode(lats = pu_main$pickup_latitude,
                                           lngs = pu_main$pickup_longitude,
                                    precision = 7)
-  pu_main$PU_halfhour <- ifelse(pu_main$PU_minute >= 30, as.numeric(pu_main$PU_hour) + 0.5, pu_main$PU_hour)
-  pu_counts <- pu_main %>% group_by(geohash, PU_weekday, PU_halfhour) %>% summarise(pickups = n())
   
+  ## Create variable for every halfhour and week within the month
+  pu_main$PU_halfhour <- ifelse(pu_main$PU_minute >= 30, as.numeric(pu_main$PU_hour) + 0.5, pu_main$PU_hour)
+  pu_main$PU_weeknum <- ceiling(as.numeric(pu_main$PU_day)/7)
+  
+  ## Retrieve counts for each grid cell for each week/day/halfhour
+  pu_counts <- pu_main %>% group_by(geohash, PU_weeknum, PU_weekday, PU_halfhour) %>% summarise(pickups = n())
+  
+  ## Repeat above process for dropoffs
   do_data <- clean_data[,c(7:12,15,16,18)]
   do_main <- subset(do_data, subset = dropoff_latitude >= 40.7 & dropoff_latitude <= 40.84 & 
                       dropoff_longitude >= -74.025 & dropoff_longitude <= -73.92)
@@ -123,28 +192,56 @@ for(link in yellow1014){
                                           lngs = do_main$dropoff_longitude,
                                    precision = 7)
   do_main$DO_halfhour <- ifelse(do_main$DO_minute >= 30, as.numeric(do_main$DO_hour) + 0.5, do_main$DO_hour)
-  do_counts <- do_main %>% group_by(geohash, DO_weekday, DO_halfhour) %>% summarise(dropoffs = n())
-  names(pu_counts) <- c("geohash", "weekday", "halfhour", "pickups")
-  names(do_counts) <- c("geohash", "weekday", "halfhour", "dropoffs")
+  do_main$DO_weeknum <- ceiling(as.numeric(do_main$DO_day)/7)
+  do_counts <- do_main %>% group_by(geohash, DO_weeknum, DO_weekday, DO_halfhour) %>% summarise(dropoffs = n())
   
-  all_counts <- merge(pu_counts, do_counts, by.x = c("geohash", "weekday", "halfhour") , all = TRUE)
+  ## Set identical variable names for pickups and dropoffs
+  names(pu_counts) <- c("geohash", "weeknum", "weekday", "halfhour", "pickups")
+  names(do_counts) <- c("geohash", "weeknum", "weekday", "halfhour", "dropoffs")
+  
+  ## Merge pickup and dropoff data
+  all_counts <- merge(pu_counts, do_counts, by.x = c("geohash", "weeknum", "weekday", "halfhour"),
+                      all = TRUE)
+  
+  ## Set NAs to be 0
   all_counts$pickups[is.na(all_counts$pickups)] <- 0
   all_counts$dropoffs[is.na(all_counts$dropoffs)] <- 0
+  
+  ## Compute difference in pickups and dropoffs
   all_counts$netdiff <- all_counts$pickups - all_counts$dropoffs
-  final_counts <- all_counts[,c(1:3,6)]
+  
+  ## Combine week/weekday indicators
+  all_counts$day <- str_c(substr(all_counts$weekday, 1, 3), all_counts$weeknum)
+  final_counts <- all_counts[,c(1,8,4,7)]
+  
+  ## Write count data to new csv
   name <- str_c("Data/All_Counts/" , substr(link, 62, 66))
   write.csv(final_counts, file = name)
+  
+  ## Erase all created data frames to minimize memory usage
+  rm(raw_data); rm(short_data); rm(clean_data); rm(firstsplit)
+  rm(pu_data); rm(pu_main); rm(pu_counts); rm(do_data); rm(do_main); rm(do_counts)
+  rm(all_counts); rm(final_counts)
 }
 
+
+## Loop for processing 2015-2016 data
 for(link in yellow1516){
+  ## Get desired columns from raw data
   raw_data <- read.csv(link)
   short_data <- raw_data[,c(2,3,6,7,10,11)]
+  
+  ## Retrieve separte fields for date and time
   firstsplit <- short_data %>% separate(tpep_pickup_datetime, sep = " ", n = 2,
                                                  into = c("pickup_date", "pickup_time")) %>%
                                         separate(tpep_dropoff_datetime, sep = " ", n = 2,
                                                  into = c("dropoff_date", "dropoff_time"))
+  
+  ## Compute day of the week for pickups and dropoffs
   firstsplit$PU_weekday <- weekdays(as.Date(firstsplit$pickup_date))
   firstsplit$DO_weekday <- weekdays(as.Date(firstsplit$dropoff_date))
+  
+  ## Split date and time into year/month/day/hour/minute/second
   clean_data <- firstsplit %>% separate(pickup_time, sep = ":", n = 3,
                                                   into = c("PU_hour", "PU_minute", "PU_second")) %>%
                                          separate(pickup_date, sep = "-", n = 3,
@@ -154,16 +251,25 @@ for(link in yellow1516){
                                          separate(dropoff_date, sep = "-", n = 3,
                                                   into = c("DO_year", "DO_month", "DO_day"))
   
+  ## Subset to only pickup variables
   pu_data <- clean_data[,c(1:6,13,14,17)]
+  ## Subset to Manhattan
   pu_main <- subset(pu_data, subset = pickup_latitude >= 40.7 & pickup_latitude <= 40.84 & 
                       pickup_longitude >= -74.025 & pickup_longitude <= -73.92)
 
+  ## Encode latitude/longitude through geohashing
   pu_main$geohash <- geohash::gh_encode(lats = pu_main$pickup_latitude,
                                           lngs = pu_main$pickup_longitude,
                                    precision = 7)
-  pu_main$PU_halfhour <- ifelse(pu_main$PU_minute >= 30, as.numeric(pu_main$PU_hour) + 0.5, pu_main$PU_hour)
-  pu_counts <- pu_main %>% group_by(geohash, PU_weekday, PU_halfhour) %>% summarise(pickups = n())
   
+  ## Create variable for every halfhour and week within the month
+  pu_main$PU_halfhour <- ifelse(pu_main$PU_minute >= 30, as.numeric(pu_main$PU_hour) + 0.5, pu_main$PU_hour)
+  pu_main$PU_weeknum <- ceiling(as.numeric(pu_main$PU_day)/7)
+  
+  ## Retrieve counts for each grid cell for each week/day/halfhour
+  pu_counts <- pu_main %>% group_by(geohash, PU_weeknum, PU_weekday, PU_halfhour) %>% summarise(pickups = n())
+  
+  ## Repeat above process for dropoffs
   do_data <- clean_data[,c(7:12,15,16,18)]
   do_main <- subset(do_data, subset = dropoff_latitude >= 40.7 & dropoff_latitude <= 40.84 & 
                       dropoff_longitude >= -74.025 & dropoff_longitude <= -73.92)
@@ -171,17 +277,36 @@ for(link in yellow1516){
                                           lngs = do_main$dropoff_longitude,
                                    precision = 7)
   do_main$DO_halfhour <- ifelse(do_main$DO_minute >= 30, as.numeric(do_main$DO_hour) + 0.5, do_main$DO_hour)
-  do_counts <- do_main %>% group_by(geohash, DO_weekday, DO_halfhour) %>% summarise(dropoffs = n())
-  names(pu_counts) <- c("geohash", "weekday", "halfhour", "pickups")
-  names(do_counts) <- c("geohash", "weekday", "halfhour", "dropoffs")
+  do_main$DO_weeknum <- ceiling(as.numeric(do_main$DO_day)/7)
+  do_counts <- do_main %>% group_by(geohash, DO_weeknum, DO_weekday, DO_halfhour) %>% summarise(dropoffs = n())
   
-  all_counts <- merge(pu_counts, do_counts, by.x = c("geohash", "weekday", "halfhour") , all = TRUE)
+  ## Set identical variable names for pickups and dropoffs
+  names(pu_counts) <- c("geohash", "weeknum", "weekday", "halfhour", "pickups")
+  names(do_counts) <- c("geohash", "weeknum", "weekday", "halfhour", "dropoffs")
+  
+  ## Merge pickup and dropoff data
+  all_counts <- merge(pu_counts, do_counts, by.x = c("geohash", "weeknum", "weekday", "halfhour"),
+                      all = TRUE)
+  
+  ## Set NAs to be 0
   all_counts$pickups[is.na(all_counts$pickups)] <- 0
   all_counts$dropoffs[is.na(all_counts$dropoffs)] <- 0
+  
+  ## Compute difference in pickups and dropoffs
   all_counts$netdiff <- all_counts$pickups - all_counts$dropoffs
-  final_counts <- all_counts[,c(1:3,6)]
+  
+  ## Combine week/weekday indicators
+  all_counts$day <- str_c(substr(all_counts$weekday, 1, 3), all_counts$weeknum)
+  final_counts <- all_counts[,c(1,8,4,7)]
+  
+  ## Write count data to new csv
   name <- str_c("Data/All_Counts/" , substr(link, 62, 66))
   write.csv(final_counts, file = name)
+  
+  ## Erase all created data frames to minimize memory usage
+  rm(raw_data); rm(short_data); rm(clean_data); rm(firstsplit)
+  rm(pu_data); rm(pu_main); rm(pu_counts); rm(do_data); rm(do_main); rm(do_counts)
+  rm(all_counts); rm(final_counts)
 }
 ```
 
