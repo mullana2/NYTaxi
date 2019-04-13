@@ -42,6 +42,105 @@ yellow1014 <- yellow_data[chrono]
 ```
 
 ```{r}
+Mon_00_0 <- data.frame(geohash = NA); Mon_00_5 <- data.frame(geohash = NA)
+Tue_00_0 <- data.frame(geohash = NA); Tue_00_5 <- data.frame(geohash = NA)
+Wed_00_0 <- data.frame(geohash = NA); Wed_00_5 <- data.frame(geohash = NA)
+Thu_00_0 <- data.frame(geohash = NA); Thu_00_5 <- data.frame(geohash = NA)
+Fri_00_0 <- data.frame(geohash = NA); Fri_00_5 <- data.frame(geohash = NA)
+Sat_00_0 <- data.frame(geohash = NA); Sat_00_5 <- data.frame(geohash = NA)
+Sun_00_0 <- data.frame(geohash = NA); Sun_00_5 <- data.frame(geohash = NA)
+
+Mon_01_0 <- data.frame(geohash = NA); Mon_01_5 <- data.frame(geohash = NA)
+Tue_01_0 <- data.frame(geohash = NA); Tue_01_5 <- data.frame(geohash = NA)
+Wed_01_0 <- data.frame(geohash = NA); Wed_01_5 <- data.frame(geohash = NA)
+Thu_01_0 <- data.frame(geohash = NA); Thu_01_5 <- data.frame(geohash = NA)
+Fri_01_0 <- data.frame(geohash = NA); Fri_01_5 <- data.frame(geohash = NA)
+Sat_01_0 <- data.frame(geohash = NA); Sat_01_5 <- data.frame(geohash = NA)
+Sun_01_0 <- data.frame(geohash = NA); Sun_01_5 <- data.frame(geohash = NA)
+
+Mon_01_0 <- data.frame(geohash = NA); Mon_01_5 <- data.frame(geohash = NA)
+Tue_01_0 <- data.frame(geohash = NA); Tue_01_5 <- data.frame(geohash = NA)
+Wed_01_0 <- data.frame(geohash = NA); Wed_01_5 <- data.frame(geohash = NA)
+Thu_01_0 <- data.frame(geohash = NA); Thu_01_5 <- data.frame(geohash = NA)
+Fri_01_0 <- data.frame(geohash = NA); Fri_01_5 <- data.frame(geohash = NA)
+Sat_01_0 <- data.frame(geohash = NA); Sat_01_5 <- data.frame(geohash = NA)
+Sun_01_0 <- data.frame(geohash = NA); Sun_01_5 <- data.frame(geohash = NA)
+
+Mon_01_0 <- data.frame(geohash = NA); Mon_01_5 <- data.frame(geohash = NA)
+Tue_01_0 <- data.frame(geohash = NA); Tue_01_5 <- data.frame(geohash = NA)
+Wed_01_0 <- data.frame(geohash = NA); Wed_01_5 <- data.frame(geohash = NA)
+Thu_01_0 <- data.frame(geohash = NA); Thu_01_5 <- data.frame(geohash = NA)
+Fri_01_0 <- data.frame(geohash = NA); Fri_01_5 <- data.frame(geohash = NA)
+Sat_01_0 <- data.frame(geohash = NA); Sat_01_5 <- data.frame(geohash = NA)
+Sun_01_0 <- data.frame(geohash = NA); Sun_01_5 <- data.frame(geohash = NA)
+
+Mon_01_0 <- data.frame(geohash = NA); Mon_01_5 <- data.frame(geohash = NA)
+Tue_01_0 <- data.frame(geohash = NA); Tue_01_5 <- data.frame(geohash = NA)
+Wed_01_0 <- data.frame(geohash = NA); Wed_01_5 <- data.frame(geohash = NA)
+Thu_01_0 <- data.frame(geohash = NA); Thu_01_5 <- data.frame(geohash = NA)
+Fri_01_0 <- data.frame(geohash = NA); Fri_01_5 <- data.frame(geohash = NA)
+Sat_01_0 <- data.frame(geohash = NA); Sat_01_5 <- data.frame(geohash = NA)
+Sun_01_0 <- data.frame(geohash = NA); Sun_01_5 <- data.frame(geohash = NA)
+
+Mon_01_0 <- data.frame(geohash = NA); Mon_01_5 <- data.frame(geohash = NA)
+Tue_01_0 <- data.frame(geohash = NA); Tue_01_5 <- data.frame(geohash = NA)
+Wed_01_0 <- data.frame(geohash = NA); Wed_01_5 <- data.frame(geohash = NA)
+Thu_01_0 <- data.frame(geohash = NA); Thu_01_5 <- data.frame(geohash = NA)
+Fri_01_0 <- data.frame(geohash = NA); Fri_01_5 <- data.frame(geohash = NA)
+Sat_01_0 <- data.frame(geohash = NA); Sat_01_5 <- data.frame(geohash = NA)
+Sun_01_0 <- data.frame(geohash = NA); Sun_01_5 <- data.frame(geohash = NA)
+
+Mon_01_0 <- data.frame(geohash = NA); Mon_01_5 <- data.frame(geohash = NA)
+Tue_01_0 <- data.frame(geohash = NA); Tue_01_5 <- data.frame(geohash = NA)
+Wed_01_0 <- data.frame(geohash = NA); Wed_01_5 <- data.frame(geohash = NA)
+Thu_01_0 <- data.frame(geohash = NA); Thu_01_5 <- data.frame(geohash = NA)
+Fri_01_0 <- data.frame(geohash = NA); Fri_01_5 <- data.frame(geohash = NA)
+Sat_01_0 <- data.frame(geohash = NA); Sat_01_5 <- data.frame(geohash = NA)
+Sun_01_0 <- data.frame(geohash = NA); Sun_01_5 <- data.frame(geohash = NA)
+
+Mon_01_0 <- data.frame(geohash = NA); Mon_01_5 <- data.frame(geohash = NA)
+Tue_01_0 <- data.frame(geohash = NA); Tue_01_5 <- data.frame(geohash = NA)
+Wed_01_0 <- data.frame(geohash = NA); Wed_01_5 <- data.frame(geohash = NA)
+Thu_01_0 <- data.frame(geohash = NA); Thu_01_5 <- data.frame(geohash = NA)
+Fri_01_0 <- data.frame(geohash = NA); Fri_01_5 <- data.frame(geohash = NA)
+Sat_01_0 <- data.frame(geohash = NA); Sat_01_5 <- data.frame(geohash = NA)
+Sun_01_0 <- data.frame(geohash = NA); Sun_01_5 <- data.frame(geohash = NA)
+
+Mon_01_0 <- data.frame(geohash = NA); Mon_01_5 <- data.frame(geohash = NA)
+Tue_01_0 <- data.frame(geohash = NA); Tue_01_5 <- data.frame(geohash = NA)
+Wed_01_0 <- data.frame(geohash = NA); Wed_01_5 <- data.frame(geohash = NA)
+Thu_01_0 <- data.frame(geohash = NA); Thu_01_5 <- data.frame(geohash = NA)
+Fri_01_0 <- data.frame(geohash = NA); Fri_01_5 <- data.frame(geohash = NA)
+Sat_01_0 <- data.frame(geohash = NA); Sat_01_5 <- data.frame(geohash = NA)
+Sun_01_0 <- data.frame(geohash = NA); Sun_01_5 <- data.frame(geohash = NA)
+
+Mon_01_0 <- data.frame(geohash = NA); Mon_01_5 <- data.frame(geohash = NA)
+Tue_01_0 <- data.frame(geohash = NA); Tue_01_5 <- data.frame(geohash = NA)
+Wed_01_0 <- data.frame(geohash = NA); Wed_01_5 <- data.frame(geohash = NA)
+Thu_01_0 <- data.frame(geohash = NA); Thu_01_5 <- data.frame(geohash = NA)
+Fri_01_0 <- data.frame(geohash = NA); Fri_01_5 <- data.frame(geohash = NA)
+Sat_01_0 <- data.frame(geohash = NA); Sat_01_5 <- data.frame(geohash = NA)
+Sun_01_0 <- data.frame(geohash = NA); Sun_01_5 <- data.frame(geohash = NA)
+
+Mon_01_0 <- data.frame(geohash = NA); Mon_01_5 <- data.frame(geohash = NA)
+Tue_01_0 <- data.frame(geohash = NA); Tue_01_5 <- data.frame(geohash = NA)
+Wed_01_0 <- data.frame(geohash = NA); Wed_01_5 <- data.frame(geohash = NA)
+Thu_01_0 <- data.frame(geohash = NA); Thu_01_5 <- data.frame(geohash = NA)
+Fri_01_0 <- data.frame(geohash = NA); Fri_01_5 <- data.frame(geohash = NA)
+Sat_01_0 <- data.frame(geohash = NA); Sat_01_5 <- data.frame(geohash = NA)
+Sun_01_0 <- data.frame(geohash = NA); Sun_01_5 <- data.frame(geohash = NA)
+
+Mon_01_0 <- data.frame(geohash = NA); Mon_01_5 <- data.frame(geohash = NA)
+Tue_01_0 <- data.frame(geohash = NA); Tue_01_5 <- data.frame(geohash = NA)
+Wed_01_0 <- data.frame(geohash = NA); Wed_01_5 <- data.frame(geohash = NA)
+Thu_01_0 <- data.frame(geohash = NA); Thu_01_5 <- data.frame(geohash = NA)
+Fri_01_0 <- data.frame(geohash = NA); Fri_01_5 <- data.frame(geohash = NA)
+Sat_01_0 <- data.frame(geohash = NA); Sat_01_5 <- data.frame(geohash = NA)
+Sun_01_0 <- data.frame(geohash = NA); Sun_01_5 <- data.frame(geohash = NA)
+```
+
+
+```{r}
 ##---------------------------------------------------------------------------------------
 ## Read in Taxi data, clean, and write new csv with counts per cell per week/day/halfhour
 ##---------------------------------------------------------------------------------------
@@ -50,7 +149,6 @@ yellow1014 <- yellow_data[chrono]
 for(link in yellow09){
   ## Get desired columns from raw data
   raw_data <- read.csv(link)
-  print("Data retrieved")
   short_data <- raw_data[,c(2,3,6,7,10,11)]
   
   ## Retrieve separte fields for date and time
@@ -59,7 +157,6 @@ for(link in yellow09){
                                         separate(Trip_Dropoff_DateTime, sep = " ", n = 2,
                                                  into = c("dropoff_date", "dropoff_time"))
   
-  print("First Split")
   ## Compute day of the week for pickups and dropoffs
   firstsplit$PU_weekday <- weekdays(as.Date(firstsplit$pickup_date))
   firstsplit$DO_weekday <- weekdays(as.Date(firstsplit$dropoff_date))
@@ -74,7 +171,6 @@ for(link in yellow09){
                                          separate(dropoff_date, sep = "-", n = 3,
                                                   into = c("DO_year", "DO_month", "DO_day"))
   
-  print("Second Split")
   ## Subset to only pickup variables
   pu_data <- clean_data[,c(1:6,13,14,17)]
   pu_data$pickup_latitude <- pu_data$Start_Lat
@@ -95,7 +191,6 @@ for(link in yellow09){
   ## Retrieve counts for each grid cell for each week/day/halfhour
   pu_counts <- pu_main %>% group_by(geohash, PU_weeknum, PU_weekday, PU_halfhour) %>% summarise(pickups = n())
   
-  print("Pickup Counts")
   ## Repeat above process for dropoffs
   do_data <- clean_data[,c(7:12,15,16,18)]
   do_data$dropoff_latitude <- do_data$End_Lat
@@ -109,7 +204,6 @@ for(link in yellow09){
   do_main$DO_weeknum <- ceiling(as.numeric(do_main$DO_day)/7)
   do_counts <- do_main %>% group_by(geohash, DO_weeknum, DO_weekday, DO_halfhour) %>% summarise(dropoffs = n())
   
-  print("Dropoff Counts")
   ## Set identical variable names for pickups and dropoffs
   names(pu_counts) <- c("geohash", "weeknum", "weekday", "halfhour", "pickups")
   names(do_counts) <- c("geohash", "weeknum", "weekday", "halfhour", "dropoffs")
@@ -217,6 +311,7 @@ for(link in yellow1014){
   ## Write count data to new csv
   name <- str_c("Data/All_Counts/" , substr(link, 62, 66), ".csv")
   write.csv(final_counts, file = name)
+  print(name)
   
   ## Erase all created data frames to minimize memory usage
   rm(raw_data); rm(short_data); rm(clean_data); rm(firstsplit)
@@ -302,6 +397,7 @@ for(link in yellow1516){
   ## Write count data to new csv
   name <- str_c("Data/All_Counts/" , substr(link, 62, 66), ".csv")
   write.csv(final_counts, file = name)
+  print(name)
   
   ## Erase all created data frames to minimize memory usage
   rm(raw_data); rm(short_data); rm(clean_data); rm(firstsplit)
