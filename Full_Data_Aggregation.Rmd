@@ -144,28 +144,33 @@ Sun_11_0 <- data.frame(geohash = NA); Sun_11_5 <- data.frame(geohash = NA)
 ## Read in Taxi data, clean, and write new csv with counts per cell per week/day/halfhour
 ##---------------------------------------------------------------------------------------
 
-## Loop for processing 2009 data
+## Loop for processingdata
 for(link in yellow_chrono){
   ## Get desired columns from raw data
   raw_data <- read.csv(link)
+  
+  ## Set ID for loaded data
   link_ID <- substr(link, 62, 66)
   print(link_ID)
   short_data <- raw_data[,c(2,3,6,7,10,11)]
   
-  short_data$pickup_datetime <- ifelse(str_detect(link, "2009"), short_data$Trip_Pickup_DateTime,
-                                ifelse(str_detect(link, "2015"), short_data$tpep_pickup_datetime,
-                                ifelse(str_detect(link, "2016"), short_data$tpep_pickup_datetime,
-                                       short_data$pickup_datetime)))
-  short_data$dropoff_datetime <- ifelse(str_detect(link, "2009"), short_data$Trip_Dropoff_DateTime,
-                                ifelse(str_detect(link, "2015"), short_data$tpep_dropoff_datetime,
-                                ifelse(str_detect(link, "2016"), short_data$tpep_dropoff_datetime,
-                                       short_data$pickup_datetime)))
-  ## Retrieve separte fields for date and time
-  firstsplit <- short_data %>% separate(pickup_datetime, sep = " ", n = 2,
+  ## Split datetime into separate date and time variables
+  if(str_detect(link, "2009")){
+      firstsplit <- short_data %>% separate(Trip_Pickup_DateTime, sep = " ", n = 2,
+                                            into = c("pickup_date", "pickup_time")) %>%
+                                        separate(Trip_Dropoff_DateTime, sep = " ", n = 2,
+                                                 into = c("dropoff_date", "dropoff_time"))
+  } else if(str_detect(link, "2015") | str_detect(link, "2016")){
+      firstsplit <- short_data %>% separate(tpep_pickup_datetime, sep = " ", n = 2,
+                                            into = c("pickup_date", "pickup_time")) %>%
+                                        separate(tpep_dropoff_datetime, sep = " ", n = 2,
+                                                 into = c("dropoff_date", "dropoff_time"))
+  } else {
+      firstsplit <- short_data %>% separate(pickup_datetime, sep = " ", n = 2,
                                                  into = c("pickup_date", "pickup_time")) %>%
                                         separate(dropoff_datetime, sep = " ", n = 2,
                                                  into = c("dropoff_date", "dropoff_time"))
-  
+  }
   ## Compute day of the week for pickups and dropoffs
   firstsplit$PU_weekday <- weekdays(as.Date(firstsplit$pickup_date))
   firstsplit$DO_weekday <- weekdays(as.Date(firstsplit$dropoff_date))
@@ -182,8 +187,11 @@ for(link in yellow_chrono){
   
   ## Subset to only pickup variables
   pu_data <- clean_data[,c(1:6,13,14,17)]
-  pu_data$pickup_latitude <- pu_data$Start_Lat
-  pu_data$pickup_longitude <- pu_data$Start_Lon
+  if(str_detect(link, "2009")){
+      pu_data$pickup_latitude <- pu_data$Start_Lat
+      pu_data$pickup_longitude <- pu_data$Start_Lon
+  }
+
   ## Subset to Manhattan
   pu_main <- subset(pu_data, subset = pickup_latitude >= 40.7 & pickup_latitude <= 40.84 & 
                       pickup_longitude >= -74.025 & pickup_longitude <= -73.92)
@@ -202,8 +210,10 @@ for(link in yellow_chrono){
   
   ## Repeat above process for dropoffs
   do_data <- clean_data[,c(7:12,15,16,18)]
-  do_data$dropoff_latitude <- do_data$End_Lat
-  do_data$dropoff_longitude <- do_data$End_Lon
+  if(str_detect(link, "2009")){
+    do_data$dropoff_latitude <- do_data$End_Lat
+    do_data$dropoff_longitude <- do_data$End_Lon
+  }
   do_main <- subset(do_data, subset = dropoff_latitude >= 40.7 & dropoff_latitude <= 40.84 & 
                       dropoff_longitude >= -74.025 & dropoff_longitude <= -73.92)
   do_main$geohash <- geohash::gh_encode(lats = do_main$dropoff_latitude,
@@ -746,14 +756,17 @@ for(link in yellow_chrono){
                       suffixes = c("", week_ID))[!duplicated(Sun_11_5$geohash),]
   }
   
-  print(name)
+  print("Done")
   ## Erase all created data frames to minimize memory usage
   rm(raw_data); rm(short_data); rm(clean_data); rm(firstsplit)
   rm(pu_data); rm(pu_main); rm(pu_counts); rm(do_data); rm(do_main); rm(do_counts)
-  rm(all_counts); rm(final_counts); rm(temp);
+  rm(all_counts); rm(temp);
 }
 
 ```
+
+
+
 
 
 
