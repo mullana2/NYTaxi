@@ -136,6 +136,103 @@ Thu_11_0 <- data.frame(geohash = NA); Thu_11_5 <- data.frame(geohash = NA)
 Fri_11_0 <- data.frame(geohash = NA); Fri_11_5 <- data.frame(geohash = NA)
 Sat_11_0 <- data.frame(geohash = NA); Sat_11_5 <- data.frame(geohash = NA)
 Sun_11_0 <- data.frame(geohash = NA); Sun_11_5 <- data.frame(geohash = NA)
+
+## Create empty data frames for each day of the week and half-hour
+Mon_12_0 <- data.frame(geohash = NA); Mon_12_5 <- data.frame(geohash = NA)
+Tue_12_0 <- data.frame(geohash = NA); Tue_12_5 <- data.frame(geohash = NA)
+Wed_12_0 <- data.frame(geohash = NA); Wed_12_5 <- data.frame(geohash = NA)
+Thu_12_0 <- data.frame(geohash = NA); Thu_12_5 <- data.frame(geohash = NA)
+Fri_12_0 <- data.frame(geohash = NA); Fri_12_5 <- data.frame(geohash = NA)
+Sat_12_0 <- data.frame(geohash = NA); Sat_12_5 <- data.frame(geohash = NA)
+Sun_12_0 <- data.frame(geohash = NA); Sun_12_5 <- data.frame(geohash = NA)
+
+Mon_13_0 <- data.frame(geohash = NA); Mon_13_5 <- data.frame(geohash = NA)
+Tue_13_0 <- data.frame(geohash = NA); Tue_13_5 <- data.frame(geohash = NA)
+Wed_13_0 <- data.frame(geohash = NA); Wed_13_5 <- data.frame(geohash = NA)
+Thu_13_0 <- data.frame(geohash = NA); Thu_13_5 <- data.frame(geohash = NA)
+Fri_13_0 <- data.frame(geohash = NA); Fri_13_5 <- data.frame(geohash = NA)
+Sat_13_0 <- data.frame(geohash = NA); Sat_13_5 <- data.frame(geohash = NA)
+Sun_13_0 <- data.frame(geohash = NA); Sun_13_5 <- data.frame(geohash = NA)
+
+Mon_14_0 <- data.frame(geohash = NA); Mon_14_5 <- data.frame(geohash = NA)
+Tue_14_0 <- data.frame(geohash = NA); Tue_14_5 <- data.frame(geohash = NA)
+Wed_14_0 <- data.frame(geohash = NA); Wed_14_5 <- data.frame(geohash = NA)
+Thu_14_0 <- data.frame(geohash = NA); Thu_14_5 <- data.frame(geohash = NA)
+Fri_14_0 <- data.frame(geohash = NA); Fri_14_5 <- data.frame(geohash = NA)
+Sat_14_0 <- data.frame(geohash = NA); Sat_14_5 <- data.frame(geohash = NA)
+Sun_14_0 <- data.frame(geohash = NA); Sun_14_5 <- data.frame(geohash = NA)
+
+Mon_15_0 <- data.frame(geohash = NA); Mon_15_5 <- data.frame(geohash = NA)
+Tue_15_0 <- data.frame(geohash = NA); Tue_15_5 <- data.frame(geohash = NA)
+Wed_15_0 <- data.frame(geohash = NA); Wed_15_5 <- data.frame(geohash = NA)
+Thu_15_0 <- data.frame(geohash = NA); Thu_15_5 <- data.frame(geohash = NA)
+Fri_15_0 <- data.frame(geohash = NA); Fri_15_5 <- data.frame(geohash = NA)
+Sat_15_0 <- data.frame(geohash = NA); Sat_15_5 <- data.frame(geohash = NA)
+Sun_15_0 <- data.frame(geohash = NA); Sun_15_5 <- data.frame(geohash = NA)
+
+Mon_16_0 <- data.frame(geohash = NA); Mon_16_5 <- data.frame(geohash = NA)
+Tue_16_0 <- data.frame(geohash = NA); Tue_16_5 <- data.frame(geohash = NA)
+Wed_16_0 <- data.frame(geohash = NA); Wed_16_5 <- data.frame(geohash = NA)
+Thu_16_0 <- data.frame(geohash = NA); Thu_16_5 <- data.frame(geohash = NA)
+Fri_16_0 <- data.frame(geohash = NA); Fri_16_5 <- data.frame(geohash = NA)
+Sat_16_0 <- data.frame(geohash = NA); Sat_16_5 <- data.frame(geohash = NA)
+Sun_16_0 <- data.frame(geohash = NA); Sun_16_5 <- data.frame(geohash = NA)
+
+Mon_17_0 <- data.frame(geohash = NA); Mon_17_5 <- data.frame(geohash = NA)
+Tue_17_0 <- data.frame(geohash = NA); Tue_17_5 <- data.frame(geohash = NA)
+Wed_17_0 <- data.frame(geohash = NA); Wed_17_5 <- data.frame(geohash = NA)
+Thu_17_0 <- data.frame(geohash = NA); Thu_17_5 <- data.frame(geohash = NA)
+Fri_17_0 <- data.frame(geohash = NA); Fri_17_5 <- data.frame(geohash = NA)
+Sat_17_0 <- data.frame(geohash = NA); Sat_17_5 <- data.frame(geohash = NA)
+Sun_17_0 <- data.frame(geohash = NA); Sun_17_5 <- data.frame(geohash = NA)
+
+Mon_18_0 <- data.frame(geohash = NA); Mon_18_5 <- data.frame(geohash = NA)
+Tue_18_0 <- data.frame(geohash = NA); Tue_18_5 <- data.frame(geohash = NA)
+Wed_18_0 <- data.frame(geohash = NA); Wed_18_5 <- data.frame(geohash = NA)
+Thu_18_0 <- data.frame(geohash = NA); Thu_18_5 <- data.frame(geohash = NA)
+Fri_18_0 <- data.frame(geohash = NA); Fri_18_5 <- data.frame(geohash = NA)
+Sat_18_0 <- data.frame(geohash = NA); Sat_18_5 <- data.frame(geohash = NA)
+Sun_18_0 <- data.frame(geohash = NA); Sun_18_5 <- data.frame(geohash = NA)
+
+Mon_19_0 <- data.frame(geohash = NA); Mon_19_5 <- data.frame(geohash = NA)
+Tue_19_0 <- data.frame(geohash = NA); Tue_19_5 <- data.frame(geohash = NA)
+Wed_19_0 <- data.frame(geohash = NA); Wed_19_5 <- data.frame(geohash = NA)
+Thu_19_0 <- data.frame(geohash = NA); Thu_19_5 <- data.frame(geohash = NA)
+Fri_19_0 <- data.frame(geohash = NA); Fri_19_5 <- data.frame(geohash = NA)
+Sat_19_0 <- data.frame(geohash = NA); Sat_19_5 <- data.frame(geohash = NA)
+Sun_19_0 <- data.frame(geohash = NA); Sun_19_5 <- data.frame(geohash = NA)
+
+Mon_20_0 <- data.frame(geohash = NA); Mon_20_5 <- data.frame(geohash = NA)
+Tue_20_0 <- data.frame(geohash = NA); Tue_20_5 <- data.frame(geohash = NA)
+Wed_20_0 <- data.frame(geohash = NA); Wed_20_5 <- data.frame(geohash = NA)
+Thu_20_0 <- data.frame(geohash = NA); Thu_20_5 <- data.frame(geohash = NA)
+Fri_20_0 <- data.frame(geohash = NA); Fri_20_5 <- data.frame(geohash = NA)
+Sat_20_0 <- data.frame(geohash = NA); Sat_20_5 <- data.frame(geohash = NA)
+Sun_20_0 <- data.frame(geohash = NA); Sun_20_5 <- data.frame(geohash = NA)
+
+Mon_21_0 <- data.frame(geohash = NA); Mon_21_5 <- data.frame(geohash = NA)
+Tue_21_0 <- data.frame(geohash = NA); Tue_21_5 <- data.frame(geohash = NA)
+Wed_21_0 <- data.frame(geohash = NA); Wed_21_5 <- data.frame(geohash = NA)
+Thu_21_0 <- data.frame(geohash = NA); Thu_21_5 <- data.frame(geohash = NA)
+Fri_21_0 <- data.frame(geohash = NA); Fri_21_5 <- data.frame(geohash = NA)
+Sat_21_0 <- data.frame(geohash = NA); Sat_21_5 <- data.frame(geohash = NA)
+Sun_21_0 <- data.frame(geohash = NA); Sun_21_5 <- data.frame(geohash = NA)
+
+Mon_22_0 <- data.frame(geohash = NA); Mon_22_5 <- data.frame(geohash = NA)
+Tue_22_0 <- data.frame(geohash = NA); Tue_22_5 <- data.frame(geohash = NA)
+Wed_22_0 <- data.frame(geohash = NA); Wed_22_5 <- data.frame(geohash = NA)
+Thu_22_0 <- data.frame(geohash = NA); Thu_22_5 <- data.frame(geohash = NA)
+Fri_22_0 <- data.frame(geohash = NA); Fri_22_5 <- data.frame(geohash = NA)
+Sat_22_0 <- data.frame(geohash = NA); Sat_22_5 <- data.frame(geohash = NA)
+Sun_22_0 <- data.frame(geohash = NA); Sun_22_5 <- data.frame(geohash = NA)
+
+Mon_23_0 <- data.frame(geohash = NA); Mon_23_5 <- data.frame(geohash = NA)
+Tue_23_0 <- data.frame(geohash = NA); Tue_23_5 <- data.frame(geohash = NA)
+Wed_23_0 <- data.frame(geohash = NA); Wed_23_5 <- data.frame(geohash = NA)
+Thu_23_0 <- data.frame(geohash = NA); Thu_23_5 <- data.frame(geohash = NA)
+Fri_23_0 <- data.frame(geohash = NA); Fri_23_5 <- data.frame(geohash = NA)
+Sat_23_0 <- data.frame(geohash = NA); Sat_23_5 <- data.frame(geohash = NA)
+Sun_23_0 <- data.frame(geohash = NA); Sun_23_5 <- data.frame(geohash = NA)
 ```
 
 
@@ -143,6 +240,9 @@ Sun_11_0 <- data.frame(geohash = NA); Sun_11_5 <- data.frame(geohash = NA)
 ##---------------------------------------------------------------------------------------
 ## Read in Taxi data, clean, and write new csv with counts per cell per week/day/halfhour
 ##---------------------------------------------------------------------------------------
+
+### Code to compile AM hours
+###
 
 ## Loop for processingdata
 for(link in yellow_chrono){
@@ -764,6 +864,626 @@ for(link in yellow_chrono){
 }
 
 ```
+
+```{r}
+### Code to compile PM hours
+###
+
+for(link in yellow_chrono){
+  ## Get desired columns from raw data
+  raw_data <- read.csv(link)
+  
+  ## Set ID for loaded data
+  link_ID <- substr(link, 62, 66)
+  print(link_ID)
+  short_data <- raw_data[,c(2,3,6,7,10,11)]
+  
+  ## Split datetime into separate date and time variables
+  if(str_detect(link, "2009")){
+      firstsplit <- short_data %>% separate(Trip_Pickup_DateTime, sep = " ", n = 2,
+                                            into = c("pickup_date", "pickup_time")) %>%
+                                        separate(Trip_Dropoff_DateTime, sep = " ", n = 2,
+                                                 into = c("dropoff_date", "dropoff_time"))
+  } else if(str_detect(link, "2015") | str_detect(link, "2016")){
+      firstsplit <- short_data %>% separate(tpep_pickup_datetime, sep = " ", n = 2,
+                                            into = c("pickup_date", "pickup_time")) %>%
+                                        separate(tpep_dropoff_datetime, sep = " ", n = 2,
+                                                 into = c("dropoff_date", "dropoff_time"))
+  } else {
+      firstsplit <- short_data %>% separate(pickup_datetime, sep = " ", n = 2,
+                                                 into = c("pickup_date", "pickup_time")) %>%
+                                        separate(dropoff_datetime, sep = " ", n = 2,
+                                                 into = c("dropoff_date", "dropoff_time"))
+  }
+  ## Compute day of the week for pickups and dropoffs
+  firstsplit$PU_weekday <- weekdays(as.Date(firstsplit$pickup_date))
+  firstsplit$DO_weekday <- weekdays(as.Date(firstsplit$dropoff_date))
+  
+  ## Split date and time into year/month/day/hour/minute/second
+  clean_data <- firstsplit %>% separate(pickup_time, sep = ":", n = 3,
+                                                  into = c("PU_hour", "PU_minute", "PU_second")) %>%
+                                         separate(pickup_date, sep = "-", n = 3,
+                                                  into = c("PU_year", "PU_month", "PU_day")) %>%
+                                         separate(dropoff_time, sep = ":", n = 3,
+                                                  into = c("DO_hour", "DO_minute", "DO_second")) %>%
+                                         separate(dropoff_date, sep = "-", n = 3,
+                                                  into = c("DO_year", "DO_month", "DO_day"))
+  
+  ## Subset to only pickup variables
+  pu_data <- clean_data[,c(1:6,13,14,17)]
+  if(str_detect(link, "2009")){
+      pu_data$pickup_latitude <- pu_data$Start_Lat
+      pu_data$pickup_longitude <- pu_data$Start_Lon
+  }
+
+  ## Subset to Manhattan
+  pu_main <- subset(pu_data, subset = pickup_latitude >= 40.7 & pickup_latitude <= 40.84 & 
+                      pickup_longitude >= -74.025 & pickup_longitude <= -73.92)
+
+  ## Encode latitude/longitude through geohashing
+  pu_main$geohash <- geohash::gh_encode(lats = pu_main$pickup_latitude,
+                                          lngs = pu_main$pickup_longitude,
+                                   precision = 7)
+  
+  ## Create variable for every halfhour and week within the month
+  pu_main$PU_halfhour <- ifelse(pu_main$PU_minute >= 30, as.numeric(pu_main$PU_hour) + 0.5, pu_main$PU_hour)
+  pu_main$PU_weeknum <- ceiling(as.numeric(pu_main$PU_day)/7)
+  
+  ## Retrieve counts for each grid cell for each week/day/halfhour
+  pu_counts <- pu_main %>% group_by(geohash, PU_weeknum, PU_weekday, PU_halfhour) %>% summarise(pickups = n())
+  
+  ## Repeat above process for dropoffs
+  do_data <- clean_data[,c(7:12,15,16,18)]
+  if(str_detect(link, "2009")){
+    do_data$dropoff_latitude <- do_data$End_Lat
+    do_data$dropoff_longitude <- do_data$End_Lon
+  }
+  do_main <- subset(do_data, subset = dropoff_latitude >= 40.7 & dropoff_latitude <= 40.84 & 
+                      dropoff_longitude >= -74.025 & dropoff_longitude <= -73.92)
+  do_main$geohash <- geohash::gh_encode(lats = do_main$dropoff_latitude,
+                                          lngs = do_main$dropoff_longitude,
+                                   precision = 7)
+  do_main$DO_halfhour <- ifelse(do_main$DO_minute >= 30, as.numeric(do_main$DO_hour) + 0.5, do_main$DO_hour)
+  do_main$DO_weeknum <- ceiling(as.numeric(do_main$DO_day)/7)
+  do_counts <- do_main %>% group_by(geohash, DO_weeknum, DO_weekday, DO_halfhour) %>% summarise(dropoffs = n())
+  
+  ## Set identical variable names for pickups and dropoffs
+  names(pu_counts) <- c("geohash", "weeknum", "weekday", "halfhour", "pickups")
+  names(do_counts) <- c("geohash", "weeknum", "weekday", "halfhour", "dropoffs")
+  
+  ## Merge pickup and dropoff data
+  all_counts <- merge(pu_counts, do_counts, by.x = c("geohash", "weeknum", "weekday", "halfhour"),
+                      all = TRUE)
+  
+  ## Set NAs to be 0
+  all_counts$pickups[is.na(all_counts$pickups)] <- 0
+  all_counts$dropoffs[is.na(all_counts$dropoffs)] <- 0
+  
+  ## Compute difference in pickups and dropoffs
+  all_counts$netdiff <- all_counts$pickups - all_counts$dropoffs
+  
+  ## Subset counts to day of the week/halfhour, add counts to respective table
+  for(i in 1:5){
+    week_ID <- str_c(link_ID, "-", i)
+    temp <- subset(all_counts, subset = weeknum == i)
+    temp$halfhour <- as.numeric(temp$halfhour)
+    
+    Mon_12_0 <- merge(Mon_12_0, subset(temp, subset = weekday == "Monday" & halfhour == 12)[,c(1,7)],
+                      by = "geohash", all = TRUE, 
+                      suffixes = c("", week_ID))[!duplicated(Mon_12_0$geohash),]
+    Mon_12_5 <- merge(Mon_12_5, subset(temp, subset = weekday == "Monday" & halfhour == 12.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_12_5$geohash),]
+    Mon_13_0 <- merge(Mon_13_0, subset(temp, subset = weekday == "Monday" & halfhour == 13)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_13_0$geohash),]
+    Mon_13_5 <- merge(Mon_13_5, subset(temp, subset = weekday == "Monday" & halfhour == 13.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_13_5$geohash),]
+    Mon_14_0 <- merge(Mon_14_0, subset(temp, subset = weekday == "Monday" & halfhour == 14)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_14_0$geohash),]
+    Mon_14_5 <- merge(Mon_14_5, subset(temp, subset = weekday == "Monday" & halfhour == 14.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_14_5$geohash),]
+    Mon_15_0 <- merge(Mon_15_0, subset(temp, subset = weekday == "Monday" & halfhour == 15)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_15_0$geohash),]
+    Mon_15_5 <- merge(Mon_15_5, subset(temp, subset = weekday == "Monday" & halfhour == 15.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_15_5$geohash),]
+    Mon_16_0 <- merge(Mon_16_0, subset(temp, subset = weekday == "Monday" & halfhour == 16)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_16_0$geohash),]
+    Mon_16_5 <- merge(Mon_16_5, subset(temp, subset = weekday == "Monday" & halfhour == 16.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_16_5$geohash),]
+    Mon_17_0 <- merge(Mon_17_0, subset(temp, subset = weekday == "Monday" & halfhour == 17)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_17_0$geohash),]
+    Mon_17_5 <- merge(Mon_17_5, subset(temp, subset = weekday == "Monday" & halfhour == 17.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_17_5$geohash),]
+    Mon_18_0 <- merge(Mon_18_0, subset(temp, subset = weekday == "Monday" & halfhour == 18)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_18_0$geohash),]
+    Mon_18_5 <- merge(Mon_18_5, subset(temp, subset = weekday == "Monday" & halfhour == 18.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_18_5$geohash),]
+    Mon_19_0 <- merge(Mon_19_0, subset(temp, subset = weekday == "Monday" & halfhour == 19)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_19_0$geohash),]
+    Mon_19_5 <- merge(Mon_19_5, subset(temp, subset = weekday == "Monday" & halfhour == 19.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_19_5$geohash),]
+    Mon_20_0 <- merge(Mon_20_0, subset(temp, subset = weekday == "Monday" & halfhour == 20)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_20_0$geohash),]
+    Mon_20_5 <- merge(Mon_20_5, subset(temp, subset = weekday == "Monday" & halfhour == 20.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_20_5$geohash),]
+    Mon_21_0 <- merge(Mon_21_0, subset(temp, subset = weekday == "Monday" & halfhour == 21)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_21_0$geohash),]
+    Mon_21_5 <- merge(Mon_21_5, subset(temp, subset = weekday == "Monday" & halfhour == 21.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_21_5$geohash),]
+    Mon_22_0 <- merge(Mon_22_0, subset(temp, subset = weekday == "Monday" & halfhour == 22)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_22_0$geohash),]
+    Mon_22_5 <- merge(Mon_22_5, subset(temp, subset = weekday == "Monday" & halfhour == 22.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_22_5$geohash),]
+    Mon_23_0 <- merge(Mon_23_0, subset(temp, subset = weekday == "Monday" & halfhour == 23)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_23_0$geohash),]
+    Mon_23_5 <- merge(Mon_23_5, subset(temp, subset = weekday == "Monday" & halfhour == 23.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Mon_23_5$geohash),]
+    Tue_12_0 <- merge(Tue_12_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 12)[,c(1,7)],
+                      by = "geohash", all = TRUE, 
+                      suffixes = c("", week_ID))[!duplicated(Tue_12_0$geohash),]
+    Tue_12_5 <- merge(Tue_12_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 12.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_12_5$geohash),]
+    Tue_13_0 <- merge(Tue_13_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 13)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_13_0$geohash),]
+    Tue_13_5 <- merge(Tue_13_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 13.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_13_5$geohash),]
+    Tue_14_0 <- merge(Tue_14_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 14)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_14_0$geohash),]
+    Tue_14_5 <- merge(Tue_14_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 14.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_14_5$geohash),]
+    Tue_15_0 <- merge(Tue_15_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 15)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_15_0$geohash),]
+    Tue_15_5 <- merge(Tue_15_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 15.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_15_5$geohash),]
+    Tue_16_0 <- merge(Tue_16_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 16)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_16_0$geohash),]
+    Tue_16_5 <- merge(Tue_16_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 16.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_16_5$geohash),]
+    Tue_17_0 <- merge(Tue_17_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 17)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_17_0$geohash),]
+    Tue_17_5 <- merge(Tue_17_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 17.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_17_5$geohash),]
+    Tue_18_0 <- merge(Tue_18_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 18)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_18_0$geohash),]
+    Tue_18_5 <- merge(Tue_18_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 18.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_18_5$geohash),]
+    Tue_19_0 <- merge(Tue_19_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 19)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_19_0$geohash),]
+    Tue_19_5 <- merge(Tue_19_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 19.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_19_5$geohash),]
+    Tue_20_0 <- merge(Tue_20_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 20)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_20_0$geohash),]
+    Tue_20_5 <- merge(Tue_20_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 20.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_20_5$geohash),]
+    Tue_21_0 <- merge(Tue_21_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 21)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_21_0$geohash),]
+    Tue_21_5 <- merge(Tue_21_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 21.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_21_5$geohash),]
+    Tue_22_0 <- merge(Tue_22_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 22)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_22_0$geohash),]
+    Tue_22_5 <- merge(Tue_22_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 22.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_22_5$geohash),]
+    Tue_23_0 <- merge(Tue_23_0, subset(temp, subset = weekday == "Tuesday" & halfhour == 23)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_23_0$geohash),]
+    Tue_23_5 <- merge(Tue_23_5, subset(temp, subset = weekday == "Tuesday" & halfhour == 23.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Tue_23_5$geohash),]
+    Wed_12_0 <- merge(Wed_12_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 12)[,c(1,7)],
+                      by = "geohash", all = TRUE, 
+                      suffixes = c("", week_ID))[!duplicated(Wed_12_0$geohash),]
+    Wed_12_5 <- merge(Wed_12_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 12.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_12_5$geohash),]
+    Wed_13_0 <- merge(Wed_13_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 13)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_13_0$geohash),]
+    Wed_13_5 <- merge(Wed_13_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 13.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_13_5$geohash),]
+    Wed_14_0 <- merge(Wed_14_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 14)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_14_0$geohash),]
+    Wed_14_5 <- merge(Wed_14_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 14.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_14_5$geohash),]
+    Wed_15_0 <- merge(Wed_15_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 15)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_15_0$geohash),]
+    Wed_15_5 <- merge(Wed_15_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 15.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_15_5$geohash),]
+    Wed_16_0 <- merge(Wed_16_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 16)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_16_0$geohash),]
+    Wed_16_5 <- merge(Wed_16_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 16.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_16_5$geohash),]
+    Wed_17_0 <- merge(Wed_17_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 17)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_17_0$geohash),]
+    Wed_17_5 <- merge(Wed_17_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 17.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_17_5$geohash),]
+    Wed_18_0 <- merge(Wed_18_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 18)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_18_0$geohash),]
+    Wed_18_5 <- merge(Wed_18_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 18.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_18_5$geohash),]
+    Wed_19_0 <- merge(Wed_19_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 19)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_19_0$geohash),]
+    Wed_19_5 <- merge(Wed_19_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 19.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_19_5$geohash),]
+    Wed_20_0 <- merge(Wed_20_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 20)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_20_0$geohash),]
+    Wed_20_5 <- merge(Wed_20_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 20.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_20_5$geohash),]
+    Wed_21_0 <- merge(Wed_21_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 21)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_21_0$geohash),]
+    Wed_21_5 <- merge(Wed_21_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 21.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_21_5$geohash),]
+    Wed_22_0 <- merge(Wed_22_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 22)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_22_0$geohash),]
+    Wed_22_5 <- merge(Wed_22_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 22.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_22_5$geohash),]
+    Wed_23_0 <- merge(Wed_23_0, subset(temp, subset = weekday == "Wednesday" & halfhour == 23)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_23_0$geohash),]
+    Wed_23_5 <- merge(Wed_23_5, subset(temp, subset = weekday == "Wednesday" & halfhour == 23.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Wed_23_5$geohash),]
+    Thu_12_0 <- merge(Thu_12_0, subset(temp, subset = weekday == "Thursday" & halfhour == 12)[,c(1,7)],
+                      by = "geohash", all = TRUE, 
+                      suffixes = c("", week_ID))[!duplicated(Thu_12_0$geohash),]
+    Thu_12_5 <- merge(Thu_12_5, subset(temp, subset = weekday == "Thursday" & halfhour == 12.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_12_5$geohash),]
+    Thu_13_0 <- merge(Thu_13_0, subset(temp, subset = weekday == "Thursday" & halfhour == 13)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_13_0$geohash),]
+    Thu_13_5 <- merge(Thu_13_5, subset(temp, subset = weekday == "Thursday" & halfhour == 13.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_13_5$geohash),]
+    Thu_14_0 <- merge(Thu_14_0, subset(temp, subset = weekday == "Thursday" & halfhour == 14)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_14_0$geohash),]
+    Thu_14_5 <- merge(Thu_14_5, subset(temp, subset = weekday == "Thursday" & halfhour == 14.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_14_5$geohash),]
+    Thu_15_0 <- merge(Thu_15_0, subset(temp, subset = weekday == "Thursday" & halfhour == 15)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_15_0$geohash),]
+    Thu_15_5 <- merge(Thu_15_5, subset(temp, subset = weekday == "Thursday" & halfhour == 15.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_15_5$geohash),]
+    Thu_16_0 <- merge(Thu_16_0, subset(temp, subset = weekday == "Thursday" & halfhour == 16)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_16_0$geohash),]
+    Thu_16_5 <- merge(Thu_16_5, subset(temp, subset = weekday == "Thursday" & halfhour == 16.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_16_5$geohash),]
+    Thu_17_0 <- merge(Thu_17_0, subset(temp, subset = weekday == "Thursday" & halfhour == 17)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_17_0$geohash),]
+    Thu_17_5 <- merge(Thu_17_5, subset(temp, subset = weekday == "Thursday" & halfhour == 17.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_17_5$geohash),]
+    Thu_18_0 <- merge(Thu_18_0, subset(temp, subset = weekday == "Thursday" & halfhour == 18)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_18_0$geohash),]
+    Thu_18_5 <- merge(Thu_18_5, subset(temp, subset = weekday == "Thursday" & halfhour == 18.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_18_5$geohash),]
+    Thu_19_0 <- merge(Thu_19_0, subset(temp, subset = weekday == "Thursday" & halfhour == 19)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_19_0$geohash),]
+    Thu_19_5 <- merge(Thu_19_5, subset(temp, subset = weekday == "Thursday" & halfhour == 19.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_19_5$geohash),]
+    Thu_20_0 <- merge(Thu_20_0, subset(temp, subset = weekday == "Thursday" & halfhour == 20)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_20_0$geohash),]
+    Thu_20_5 <- merge(Thu_20_5, subset(temp, subset = weekday == "Thursday" & halfhour == 20.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_20_5$geohash),]
+    Thu_21_0 <- merge(Thu_21_0, subset(temp, subset = weekday == "Thursday" & halfhour == 21)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_21_0$geohash),]
+    Thu_21_5 <- merge(Thu_21_5, subset(temp, subset = weekday == "Thursday" & halfhour == 21.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_21_5$geohash),]
+    Thu_22_0 <- merge(Thu_22_0, subset(temp, subset = weekday == "Thursday" & halfhour == 22)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_22_0$geohash),]
+    Thu_22_5 <- merge(Thu_22_5, subset(temp, subset = weekday == "Thursday" & halfhour == 22.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_22_5$geohash),]
+    Thu_23_0 <- merge(Thu_23_0, subset(temp, subset = weekday == "Thursday" & halfhour == 23)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_23_0$geohash),]
+    Thu_23_5 <- merge(Thu_23_5, subset(temp, subset = weekday == "Thursday" & halfhour == 23.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Thu_23_5$geohash),]
+    Fri_12_0 <- merge(Fri_12_0, subset(temp, subset = weekday == "Friday" & halfhour == 12)[,c(1,7)],
+                      by = "geohash", all = TRUE, 
+                      suffixes = c("", week_ID))[!duplicated(Fri_12_0$geohash),]
+    Fri_12_5 <- merge(Fri_12_5, subset(temp, subset = weekday == "Friday" & halfhour == 12.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_12_5$geohash),]
+    Fri_13_0 <- merge(Fri_13_0, subset(temp, subset = weekday == "Friday" & halfhour == 13)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_13_0$geohash),]
+    Fri_13_5 <- merge(Fri_13_5, subset(temp, subset = weekday == "Friday" & halfhour == 13.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_13_5$geohash),]
+    Fri_14_0 <- merge(Fri_14_0, subset(temp, subset = weekday == "Friday" & halfhour == 14)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_14_0$geohash),]
+    Fri_14_5 <- merge(Fri_14_5, subset(temp, subset = weekday == "Friday" & halfhour == 14.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_14_5$geohash),]
+    Fri_15_0 <- merge(Fri_15_0, subset(temp, subset = weekday == "Friday" & halfhour == 15)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_15_0$geohash),]
+    Fri_15_5 <- merge(Fri_15_5, subset(temp, subset = weekday == "Friday" & halfhour == 15.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_15_5$geohash),]
+    Fri_16_0 <- merge(Fri_16_0, subset(temp, subset = weekday == "Friday" & halfhour == 16)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_16_0$geohash),]
+    Fri_16_5 <- merge(Fri_16_5, subset(temp, subset = weekday == "Friday" & halfhour == 16.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_16_5$geohash),]
+    Fri_17_0 <- merge(Fri_17_0, subset(temp, subset = weekday == "Friday" & halfhour == 17)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_17_0$geohash),]
+    Fri_17_5 <- merge(Fri_17_5, subset(temp, subset = weekday == "Friday" & halfhour == 17.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_17_5$geohash),]
+    Fri_18_0 <- merge(Fri_18_0, subset(temp, subset = weekday == "Friday" & halfhour == 18)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_18_0$geohash),]
+    Fri_18_5 <- merge(Fri_18_5, subset(temp, subset = weekday == "Friday" & halfhour == 18.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_18_5$geohash),]
+    Fri_19_0 <- merge(Fri_19_0, subset(temp, subset = weekday == "Friday" & halfhour == 19)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_19_0$geohash),]
+    Fri_19_5 <- merge(Fri_19_5, subset(temp, subset = weekday == "Friday" & halfhour == 19.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_19_5$geohash),]
+    Fri_20_0 <- merge(Fri_20_0, subset(temp, subset = weekday == "Friday" & halfhour == 20)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_20_0$geohash),]
+    Fri_20_5 <- merge(Fri_20_5, subset(temp, subset = weekday == "Friday" & halfhour == 20.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_20_5$geohash),]
+    Fri_21_0 <- merge(Fri_21_0, subset(temp, subset = weekday == "Friday" & halfhour == 21)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_21_0$geohash),]
+    Fri_21_5 <- merge(Fri_21_5, subset(temp, subset = weekday == "Friday" & halfhour == 21.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_21_5$geohash),]
+    Fri_22_0 <- merge(Fri_22_0, subset(temp, subset = weekday == "Friday" & halfhour == 22)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_22_0$geohash),]
+    Fri_22_5 <- merge(Fri_22_5, subset(temp, subset = weekday == "Friday" & halfhour == 22.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_22_5$geohash),]
+    Fri_23_0 <- merge(Fri_23_0, subset(temp, subset = weekday == "Friday" & halfhour == 23)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_23_0$geohash),]
+    Fri_23_5 <- merge(Fri_23_5, subset(temp, subset = weekday == "Friday" & halfhour == 23.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Fri_23_5$geohash),]
+    Sat_12_0 <- merge(Sat_12_0, subset(temp, subset = weekday == "Saturday" & halfhour == 12)[,c(1,7)],
+                      by = "geohash", all = TRUE, 
+                      suffixes = c("", week_ID))[!duplicated(Sat_12_0$geohash),]
+    Sat_12_5 <- merge(Sat_12_5, subset(temp, subset = weekday == "Saturday" & halfhour == 12.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_12_5$geohash),]
+    Sat_13_0 <- merge(Sat_13_0, subset(temp, subset = weekday == "Saturday" & halfhour == 13)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_13_0$geohash),]
+    Sat_13_5 <- merge(Sat_13_5, subset(temp, subset = weekday == "Saturday" & halfhour == 13.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_13_5$geohash),]
+    Sat_14_0 <- merge(Sat_14_0, subset(temp, subset = weekday == "Saturday" & halfhour == 14)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_14_0$geohash),]
+    Sat_14_5 <- merge(Sat_14_5, subset(temp, subset = weekday == "Saturday" & halfhour == 14.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_14_5$geohash),]
+    Sat_15_0 <- merge(Sat_15_0, subset(temp, subset = weekday == "Saturday" & halfhour == 15)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_15_0$geohash),]
+    Sat_15_5 <- merge(Sat_15_5, subset(temp, subset = weekday == "Saturday" & halfhour == 15.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_15_5$geohash),]
+    Sat_16_0 <- merge(Sat_16_0, subset(temp, subset = weekday == "Saturday" & halfhour == 16)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_16_0$geohash),]
+    Sat_16_5 <- merge(Sat_16_5, subset(temp, subset = weekday == "Saturday" & halfhour == 16.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_16_5$geohash),]
+    Sat_17_0 <- merge(Sat_17_0, subset(temp, subset = weekday == "Saturday" & halfhour == 17)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_17_0$geohash),]
+    Sat_17_5 <- merge(Sat_17_5, subset(temp, subset = weekday == "Saturday" & halfhour == 17.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_17_5$geohash),]
+    Sat_18_0 <- merge(Sat_18_0, subset(temp, subset = weekday == "Saturday" & halfhour == 18)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_18_0$geohash),]
+    Sat_18_5 <- merge(Sat_18_5, subset(temp, subset = weekday == "Saturday" & halfhour == 18.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_18_5$geohash),]
+    Sat_19_0 <- merge(Sat_19_0, subset(temp, subset = weekday == "Saturday" & halfhour == 19)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_19_0$geohash),]
+    Sat_19_5 <- merge(Sat_19_5, subset(temp, subset = weekday == "Saturday" & halfhour == 19.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_19_5$geohash),]
+    Sat_20_0 <- merge(Sat_20_0, subset(temp, subset = weekday == "Saturday" & halfhour == 20)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_20_0$geohash),]
+    Sat_20_5 <- merge(Sat_20_5, subset(temp, subset = weekday == "Saturday" & halfhour == 20.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_20_5$geohash),]
+    Sat_21_0 <- merge(Sat_21_0, subset(temp, subset = weekday == "Saturday" & halfhour == 21)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_21_0$geohash),]
+    Sat_21_5 <- merge(Sat_21_5, subset(temp, subset = weekday == "Saturday" & halfhour == 21.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_21_5$geohash),]
+    Sat_22_0 <- merge(Sat_22_0, subset(temp, subset = weekday == "Saturday" & halfhour == 22)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_22_0$geohash),]
+    Sat_22_5 <- merge(Sat_22_5, subset(temp, subset = weekday == "Saturday" & halfhour == 22.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_22_5$geohash),]
+    Sat_23_0 <- merge(Sat_23_0, subset(temp, subset = weekday == "Saturday" & halfhour == 23)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_23_0$geohash),]
+    Sat_23_5 <- merge(Sat_23_5, subset(temp, subset = weekday == "Saturday" & halfhour == 23.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sat_23_5$geohash),]
+    Sun_12_0 <- merge(Sun_12_0, subset(temp, subset = weekday == "Sunday" & halfhour == 12)[,c(1,7)],
+                      by = "geohash", all = TRUE, 
+                      suffixes = c("", week_ID))[!duplicated(Sun_12_0$geohash),]
+    Sun_12_5 <- merge(Sun_12_5, subset(temp, subset = weekday == "Sunday" & halfhour == 12.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_12_5$geohash),]
+    Sun_13_0 <- merge(Sun_13_0, subset(temp, subset = weekday == "Sunday" & halfhour == 13)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_13_0$geohash),]
+    Sun_13_5 <- merge(Sun_13_5, subset(temp, subset = weekday == "Sunday" & halfhour == 13.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_13_5$geohash),]
+    Sun_14_0 <- merge(Sun_14_0, subset(temp, subset = weekday == "Sunday" & halfhour == 14)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_14_0$geohash),]
+    Sun_14_5 <- merge(Sun_14_5, subset(temp, subset = weekday == "Sunday" & halfhour == 14.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_14_5$geohash),]
+    Sun_15_0 <- merge(Sun_15_0, subset(temp, subset = weekday == "Sunday" & halfhour == 15)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_15_0$geohash),]
+    Sun_15_5 <- merge(Sun_15_5, subset(temp, subset = weekday == "Sunday" & halfhour == 15.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_15_5$geohash),]
+    Sun_16_0 <- merge(Sun_16_0, subset(temp, subset = weekday == "Sunday" & halfhour == 16)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_16_0$geohash),]
+    Sun_16_5 <- merge(Sun_16_5, subset(temp, subset = weekday == "Sunday" & halfhour == 16.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_16_5$geohash),]
+    Sun_17_0 <- merge(Sun_17_0, subset(temp, subset = weekday == "Sunday" & halfhour == 17)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_17_0$geohash),]
+    Sun_17_5 <- merge(Sun_17_5, subset(temp, subset = weekday == "Sunday" & halfhour == 17.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_17_5$geohash),]
+    Sun_18_0 <- merge(Sun_18_0, subset(temp, subset = weekday == "Sunday" & halfhour == 18)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_18_0$geohash),]
+    Sun_18_5 <- merge(Sun_18_5, subset(temp, subset = weekday == "Sunday" & halfhour == 18.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_18_5$geohash),]
+    Sun_19_0 <- merge(Sun_19_0, subset(temp, subset = weekday == "Sunday" & halfhour == 19)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_19_0$geohash),]
+    Sun_19_5 <- merge(Sun_19_5, subset(temp, subset = weekday == "Sunday" & halfhour == 19.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_19_5$geohash),]
+    Sun_20_0 <- merge(Sun_20_0, subset(temp, subset = weekday == "Sunday" & halfhour == 20)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_20_0$geohash),]
+    Sun_20_5 <- merge(Sun_20_5, subset(temp, subset = weekday == "Sunday" & halfhour == 20.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_20_5$geohash),]
+    Sun_21_0 <- merge(Sun_21_0, subset(temp, subset = weekday == "Sunday" & halfhour == 21)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_21_0$geohash),]
+    Sun_21_5 <- merge(Sun_21_5, subset(temp, subset = weekday == "Sunday" & halfhour == 21.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_21_5$geohash),]
+    Sun_22_0 <- merge(Sun_22_0, subset(temp, subset = weekday == "Sunday" & halfhour == 22)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_22_0$geohash),]
+    Sun_22_5 <- merge(Sun_22_5, subset(temp, subset = weekday == "Sunday" & halfhour == 22.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_22_5$geohash),]
+    Sun_23_0 <- merge(Sun_23_0, subset(temp, subset = weekday == "Sunday" & halfhour == 23)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_23_0$geohash),]
+    Sun_23_5 <- merge(Sun_23_5, subset(temp, subset = weekday == "Sunday" & halfhour == 23.5)[,c(1,7)],
+                      by = "geohash", all = TRUE,
+                      suffixes = c("", week_ID))[!duplicated(Sun_23_5$geohash),]
+    
+   
+  }
+  
+  print("Done")
+  ## Erase all created data frames to minimize memory usage
+  rm(raw_data); rm(short_data); rm(clean_data); rm(firstsplit)
+  rm(pu_data); rm(pu_main); rm(pu_counts); rm(do_data); rm(do_main); rm(do_counts)
+  rm(all_counts); rm(temp);
+}
+```
+
 
 
 
