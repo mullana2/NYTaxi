@@ -102,7 +102,7 @@ for(i in 1:size){
                            ic = "aic", allowmean = T, allowdrift = T)
   ts_preds_strict[i] <- forecast(cell_model_strict, h = 1)$mean[1]
   ts_preds_free[i] <- forecast(cell_model_free, h = 1)$mean[1]
-  print(i)
+  if(i%%100 == 0){print(i)}
 }
 
 cor(ts_preds_strict, nd_Manhat[,90])^2 #R^2 = 0.925

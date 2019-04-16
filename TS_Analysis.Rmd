@@ -1,0 +1,121 @@
+---
+title: "Time_Series_Predictions"
+author: "Aidan Mullan"
+date: "4/15/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(geohash)
+library(stringr)
+library(forecast)
+```
+
+
+```{r}
+days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+path <- rep(NA, 7)
+holt_r2 <- matrix(ncol = 7, nrow = 48)
+holt_rmse <- matrix(ncol = 7, nrow = 48)
+## Loop over each day of the week
+for(i in 1:7){
+  path[i] <- str_c("Data/All_Counts/", days[i])
+  all_files <- list.files(path[i])
+  num_files <- length(all_files)
+  all_r2 <- numeric(num_files)
+  all_rmse <- numeric(num_files)
+  
+  ## Loop over each file (halfhour) for the given day
+  index <- 1
+  for(file in all_files){
+    print(file)
+    filepath <- str_c(path[i], "/", file)
+    full_data <- read.csv(filepath)[,-c(1:2)]
+    miss_data <- 451 - rowSums(is.na(full_data))
+    data <- full_data[which(miss_data > 75),]
+    data[is.na(data)] <- 0
+    
+    last_week <- ncol(data)-1
+    size <- nrow(data)
+    ts_preds <- numeric(size)
+    
+    ## In each file, create time series for each cell
+    for(n in 1:size){
+      cell <- numeric(last_week-1)
+      for(j in 1:(last_week-1)){
+        cell[j] <- data[n,j]
+      }
+      ts <- ts(cell)
+      #cell_model <- auto.arima(ts, ic = "aic")
+      cell_model <- HoltWinters(ts, beta = FALSE, gamma = FALSE)
+      ts_preds[n] <- forecast(cell_model, h = 1)$mean[1]
+      if(n %% 250 == 0){print(n)}
+    }
+    holt_r2[index,i] <- cor(ts_preds, data[,last_week])^2
+    holt_rmse[index,i] <- sqrt(mean((ts_preds-data[,last_week])^2))
+    index <- index + 1
+  }
+  ts_r2[,i] <- all_r2
+  ts_r2[,i] <- all_rmse
+}
+```
+
+
+```{r}
+days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+path <- rep(NA, 7)
+arima_r2 <- matrix(ncol = 7, nrow = 48)
+arima_rmse <- matrix(ncol = 7, nrow = 48)
+smooth_r2 <- matrix(ncol = 7, nrow = 48)
+smooth_rmse <- matrix(ncol = 7, nrow = 48)
+
+## Loop over each day of the week
+for(i in 1:7){
+  path[i] <- str_c("Data/All_Counts/", days[i])
+  all_files <- list.files(path[i])
+  num_files <- length(all_files)
+  all_r2 <- numeric(num_files)
+  all_rmse <- numeric(num_files)
+  
+  ## Loop over each file (halfhour) for the given day
+  index <- 1
+  for(file in all_files){
+    print(file)
+    filepath <- str_c(path[i], "/", file)
+    full_data <- read.csv(filepath)[,-c(1:2)]
+    miss_data <- 451 - rowSums(is.na(full_data))
+    data <- full_data[which(miss_data > 75),]
+    data[is.na(data)] <- 0
+    
+    
+    size <- nrow(data)
+    arima_preds <- numeric(size)
+    smooth_preds <- numeric(size)
+    
+    ## In each file, create time series for each cell
+    for(n in 1:size){
+      cell <- numeric(89)
+      for(j in 1:89){
+        a <- ((j-1)*5)+1
+        b <- j*5
+        cell[j] <- rowMeans(data[n,a:b])
+      }
+      ts <- ts(cell)
+      cell_arima <- auto.arima(ts, max.order = 10, max.d = 12, ic = "aic")
+      cell_smooth <- HoltWinters(ts, gamma = F, beta = F)
+      arima_preds[n] <- forecast(cell_arima, h = 1)$mean[1]
+      smooth_preds[n] <- forecast(cell_smooth, h = 1)$mean[1]
+      if(n %% 250 == 0){print(n)}
+    }
+    arima_r2[index,i] <- cor(ts_preds, rowMeans(data[,446:450]))^2
+    arima_rmse[index,i] <- sqrt(mean((ts_preds-rowMeans(data[,446:450]))^2))
+    index <- index + 1
+  }
+}
+```
+
