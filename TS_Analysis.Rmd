@@ -71,8 +71,8 @@ for(i in 1:7){
 ```{r}
 days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 path <- rep(NA, 7)
-arima_r2 <- matrix(ncol = 7, nrow = 48)
-arima_rmse <- matrix(ncol = 7, nrow = 48)
+#arima_r2 <- matrix(ncol = 7, nrow = 48)
+#arima_rmse <- matrix(ncol = 7, nrow = 48)
 smooth_r2 <- matrix(ncol = 7, nrow = 48)
 smooth_rmse <- matrix(ncol = 7, nrow = 48)
 
@@ -81,8 +81,6 @@ for(i in 1:7){
   path[i] <- str_c("Data/All_Counts/", days[i])
   all_files <- list.files(path[i])
   num_files <- length(all_files)
-  all_r2 <- numeric(num_files)
-  all_rmse <- numeric(num_files)
   
   ## Loop over each file (halfhour) for the given day
   index <- 1
@@ -96,7 +94,7 @@ for(i in 1:7){
     
     
     size <- nrow(data)
-    arima_preds <- numeric(size)
+    #arima_preds <- numeric(size)
     smooth_preds <- numeric(size)
     
     ## In each file, create time series for each cell
@@ -108,24 +106,24 @@ for(i in 1:7){
         cell[j] <- rowMeans(data[n,a:b])
       }
       ts <- ts(cell)
-      cell_arima <- auto.arima(ts, max.order = 10, max.d = 12, ic = "aic")
+      #cell_arima <- auto.arima(ts, max.order = 10, max.d = 12, ic = "aic")
       cell_smooth <- HoltWinters(ts, gamma = F, beta = F)
-      arima_preds[n] <- forecast(cell_arima, h = 1)$mean[1]
+      #arima_preds[n] <- forecast(cell_arima, h = 1)$mean[1]
       smooth_preds[n] <- forecast(cell_smooth, h = 1)$mean[1]
       if(n %% 250 == 0){print(n)}
     }
-    arima_r2[index,i] <- cor(arima_preds, rowMeans(data[,446:450]))^2
-    arima_rmse[index,i] <- sqrt(mean((arima_preds-rowMeans(data[,446:450]))^2))
+    #arima_r2[index,i] <- cor(arima_preds, rowMeans(data[,446:450]))^2
+    #arima_rmse[index,i] <- sqrt(mean((arima_preds-rowMeans(data[,446:450]))^2))
     smooth_r2[index,i] <- cor(smooth_preds, rowMeans(data[,446:450]))^2
     smooth_rmse[index,i] <- sqrt(mean((smooth_preds-rowMeans(data[,446:450]))^2))
     index <- index + 1
   }
 }
+
+
 ```
 
-## Get predicted + observed data for Monday 8am
---- R2 = 0.904
---- RMSE = 1.557
+## Get data for hours 12-23.5 and re-run analysis
 
 
 
