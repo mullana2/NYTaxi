@@ -1,0 +1,90 @@
+---
+title: "Presentation_Images"
+author: "Aidan Mullan"
+date: "4/16/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(caret)
+library(dplyr)
+library(e1071)
+library(geohash)
+library(stringr)
+library(ggplot2)
+library(ggmap)
+```
+
+```{r}
+full_data <- read.csv("Data/Mon08_Predicts.csv")
+
+Man_index <- which(full_data$geohash %in% nd_Manhat$geohash)
+sub_data <- full_data[Man_index,]
+
+hashes <- gh_decode(sub_data$geohash)
+sub_data$Lat <- hashes$lat
+sub_data$Lon <- hashes$lng
+sub_data$lowbound <- sub_data$Lat - 1.6*sub_data$Lon
+sub_data$upbound <- sub_data$Lat - 1.454545*sub_data$Lat
+predict_data <- subset(sub_data, subset = lowbound >= 159.064 & upbound <= 148.4327)
+
+
+predict_data$obscolor <- cut(predict_data$observed,
+                          breaks = c(-100, -5,-1,0,5,100),
+                          labels = c("(-55,6)", "(-5,-1)", "0", "(1,5)", "(6,58)"))
+predict_data$knncolor <- cut(predict_data$knn_predict,
+                          breaks = c(-100, -5,-1,0.5,5,100),
+                          labels = c("(-33,6)", "(-5,-1)", "0", "(1,5)", "(6,22)"))
+predict_data$tscolor <- cut(predict_data$smooth_predict,
+                          breaks = c(-100, -5,-1,0.5,5,100),
+                          labels = c("(-52,6)", "(-5,-1)", "0", "(1,5)", "(6,55)"))
+
+zoom_map_raw <- get_map(location = c(-73.98, 40.76), zoom = 12, scale = 2)
+zoom_map <- ggmap(zoom_map_raw, legend = "none")
+
+obs_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE, shape = 15,
+                                       aes(x = Lon, y = Lat, color = obscolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("Observed Net Pickups for Manhattan: Mon 8AM") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 10, hjust = 0.5),
+        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
+
+knn_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE, shape = 15,
+                                       aes(x = Lon, y = Lat, color = knncolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("KNN Predicted Net Pickups for Manhattan: Mon 8AM") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 10, hjust = 0.5),
+        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
+
+ts_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE, shape = 15,
+                                       aes(x = Lon, y = Lat, color = tscolor)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("Time Series Predicted Net Pickups for Manhattan: Mon 8AM") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 10, hjust = 0.5),
+        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
+
+cor(predict_data$observed, predict_data$knn_predict)^2
+cor(predict_data$observed, predict_data$smooth_predict)^2
+sqrt(mean((predict_data$observed - predict_data$knn_predict)^2))
+sqrt(mean((predict_data$observed - predict_data$smooth_predict)^2))
+
+ggsave(filename = "Images/Mon8_ObsMap.jpeg", plot = obs_map,
+       width = 7, height = 7, device = "jpeg")
+ggsave(filename = "Images/Mon8_KnnMap.jpeg", plot = knn_map,
+       width = 7, height = 7, device = "jpeg")
+ggsave(filename = "Images/Mon8_TsMap.jpeg", plot = ts_map,
+       width = 7, height = 7, device = "jpeg")
+```
