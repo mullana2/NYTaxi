@@ -10,7 +10,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+library(caret)
 library(dplyr)
+library(e1071)
 library(geohash)
 library(stringr)
 library(forecast)
@@ -112,10 +114,23 @@ for(i in 1:7){
       smooth_preds[n] <- forecast(cell_smooth, h = 1)$mean[1]
       if(n %% 250 == 0){print(n)}
     }
-    arima_r2[index,i] <- cor(ts_preds, rowMeans(data[,446:450]))^2
-    arima_rmse[index,i] <- sqrt(mean((ts_preds-rowMeans(data[,446:450]))^2))
+    arima_r2[index,i] <- cor(arima_preds, rowMeans(data[,446:450]))^2
+    arima_rmse[index,i] <- sqrt(mean((arima_preds-rowMeans(data[,446:450]))^2))
+    smooth_r2[index,i] <- cor(smooth_preds, rowMeans(data[,446:450]))^2
+    smooth_rmse[index,i] <- sqrt(mean((smooth_preds-rowMeans(data[,446:450]))^2))
     index <- index + 1
   }
 }
 ```
+
+## Get predicted + observed data for Monday 8am
+--- R2 = 0.904
+--- RMSE = 1.557
+
+
+
+
+
+
+
 
