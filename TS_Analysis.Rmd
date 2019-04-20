@@ -19,60 +19,13 @@ library(forecast)
 ```
 
 
-```{r}
+```{r, warning=FALSE}
 days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 path <- rep(NA, 7)
-holt_r2 <- matrix(ncol = 7, nrow = 48)
-holt_rmse <- matrix(ncol = 7, nrow = 48)
-## Loop over each day of the week
-for(i in 1:7){
-  path[i] <- str_c("Data/All_Counts/", days[i])
-  all_files <- list.files(path[i])
-  num_files <- length(all_files)
-  all_r2 <- numeric(num_files)
-  all_rmse <- numeric(num_files)
-  
-  ## Loop over each file (halfhour) for the given day
-  index <- 1
-  for(file in all_files){
-    print(file)
-    filepath <- str_c(path[i], "/", file)
-    full_data <- read.csv(filepath)[,-c(1:2)]
-    miss_data <- 451 - rowSums(is.na(full_data))
-    data <- full_data[which(miss_data > 75),]
-    data[is.na(data)] <- 0
-    
-    last_week <- ncol(data)-1
-    size <- nrow(data)
-    ts_preds <- numeric(size)
-    
-    ## In each file, create time series for each cell
-    for(n in 1:size){
-      cell <- numeric(last_week-1)
-      for(j in 1:(last_week-1)){
-        cell[j] <- data[n,j]
-      }
-      ts <- ts(cell)
-      #cell_model <- auto.arima(ts, ic = "aic")
-      cell_model <- HoltWinters(ts, beta = FALSE, gamma = FALSE)
-      ts_preds[n] <- forecast(cell_model, h = 1)$mean[1]
-      if(n %% 250 == 0){print(n)}
-    }
-    holt_r2[index,i] <- cor(ts_preds, data[,last_week])^2
-    holt_rmse[index,i] <- sqrt(mean((ts_preds-data[,last_week])^2))
-    index <- index + 1
-  }
-  ts_r2[,i] <- all_r2
-  ts_r2[,i] <- all_rmse
-}
-```
-
-
-```{r}
-days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-path <- rep(NA, 7)
-#arima_r2 <- matrix(ncol = 7, nrow = 48)
-#arima_rmse <- matrix(ncol = 7, nrow = 48)
+knn_r2 <- matrix(ncol = 7, nrow = 48)
+knn_rmse <- matrix(ncol = 7, nrow = 48)
+arima_r2 <- matrix(ncol = 7, nrow = 48)
+arima_rmse <- matrix(ncol = 7, nrow = 48)
 smooth_r2 <- matrix(ncol = 7, nrow = 48)
 smooth_rmse <- matrix(ncol = 7, nrow = 48)
 
@@ -87,43 +40,53 @@ for(i in 1:7){
   for(file in all_files){
     print(file)
     filepath <- str_c(path[i], "/", file)
-    full_data <- read.csv(filepath)[,-c(1:2)]
+    full_data <- read.csv(filepath)[,-1]
     miss_data <- 451 - rowSums(is.na(full_data))
     data <- full_data[which(miss_data > 75),]
     data[is.na(data)] <- 0
+    last_week <- ncol(data)
     
+    data$all_means <- rowMeans(data[,2:446])
+    hashes <- gh_decode(data$geohash)
+    data$lat <- scale(hashes$lat)
+    data$lon <- scale(hashes$lat)
+    control <- trainControl(method = "cv", number = 10, classProbs = TRUE)
+    mod_knn <- train(all_means~lon+lat, data = data, method = "knn",
+                trControl = control, tuneGrid = expand.grid(k = c(4,8,12,20,24)), metric = "RMSE")
+    knn_preds <- predict(mod_knn, newdata = data[,c(last_week, last_week+2, last_week+3)])
+    knn_r2[index,i] <- cor(knn_preds, data[,last_week-1])^2
+    knn_rmse[index,i] <- sqrt(mean((data[,last_week-1]-knn_preds)^2))
     
     size <- nrow(data)
-    #arima_preds <- numeric(size)
+    arima_preds <- numeric(size)
     smooth_preds <- numeric(size)
     
     ## In each file, create time series for each cell
     for(n in 1:size){
       cell <- numeric(89)
-      for(j in 1:89){
-        a <- ((j-1)*5)+1
-        b <- j*5
-        cell[j] <- rowMeans(data[n,a:b])
+      for(j in 2:(last_week-1)){
+        cell[j] <- data[n,j]
       }
       ts <- ts(cell)
-      #cell_arima <- auto.arima(ts, max.order = 10, max.d = 12, ic = "aic")
+      cell_arima <- auto.arima(ts, max.order = 10, max.d = 12, ic = "aic")
       cell_smooth <- HoltWinters(ts, gamma = F, beta = F)
-      #arima_preds[n] <- forecast(cell_arima, h = 1)$mean[1]
+      arima_preds[n] <- forecast(cell_arima, h = 1)$mean[1]
       smooth_preds[n] <- forecast(cell_smooth, h = 1)$mean[1]
-      if(n %% 250 == 0){print(n)}
     }
-    #arima_r2[index,i] <- cor(arima_preds, rowMeans(data[,446:450]))^2
-    #arima_rmse[index,i] <- sqrt(mean((arima_preds-rowMeans(data[,446:450]))^2))
-    smooth_r2[index,i] <- cor(smooth_preds, rowMeans(data[,446:450]))^2
-    smooth_rmse[index,i] <- sqrt(mean((smooth_preds-rowMeans(data[,446:450]))^2))
+    arima_r2[index,i] <- cor(arima_preds, data[,last_week-1])^2
+    arima_rmse[index,i] <- sqrt(mean((arima_preds-data[,last_week-1])^2))
+    smooth_r2[index,i] <- cor(smooth_preds, data[,last_week-1])^2
+    smooth_rmse[index,i] <- sqrt(mean((smooth_preds-data[,last_week-1])^2))
     index <- index + 1
   }
 }
 
-
 ```
 
-## Get data for hours 12-23.5 and re-run analysis
+
+
+
+
 
 
 
