@@ -1,0 +1,184 @@
+---
+title: "TS_Analysis_Continuous"
+author: "Aidan Mullan"
+date: "4/26/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=FALSE}
+library(caret)
+library(dplyr)
+library(e1071)
+library(geohash)
+library(stringr)
+library(forecast)
+```
+
+```{r, warning=FALSE}
+days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+path <- rep(NA, 7)
+all_files <- rep(NA, 7*48)
+geohashes <- read.csv("Data/geohashes.csv")[,1:2]
+geohashes$geohash <- as.character(geohashes$geohash)
+ncells <- nrow(geohashes)
+
+for(i in 1:7){
+  path[i] <- str_c("Data/All_Counts/", days[i])
+  a <- (i-1)*48 + 1
+  b <- (i)*48
+  all_files[a:b] <- str_c(path[i], "/", list.files(path[i]))
+}
+
+order <- numeric(360*336)
+for(i in 1:360){
+  a <- (i-1)*336 + 1
+  b <- i*336
+  order[a:b] <- seq(i, 360*336, 360)
+}
+
+data_len <- 336*360
+arima_r2 <- arima_rmse <- smooth_r2 <- smooth_rmse <- numeric(ncells)
+
+for(cell_num in 1:ncells){
+  cell_geo <- geo_labels[cell_num]
+  cell_raw <- numeric(data_len)
+  for(i in 1:(7*48)){
+    file <- all_files[i]
+    full_data <- read.csv(file)[,-1]
+    short_data <- full_data[,-seq(6,451,5)]
+    cell_index <- which(short_data$geohash == cell_geo)
+    if(length(cell_index) == 0){
+      cell_raw[((i-1)*360 + 1):(i*360)] <- rep(0,360)
+    } else {
+      for(j in 2:361){
+        cell_raw[(i-1)*360+j-1] <- short_data[cell_index,j]
+      }
+    }
+  }
+  print(str_c(cell_num," out of ", ncells, " cells compiled"))
+  big_cell <- cell_raw[order]
+  cell <- big_cell[120000:120960]
+  cell[which(cell == 0)] <- NA
+  miss_data <- 961 - sum(is.na(cell))
+  
+  if(miss_data < 300){
+    arima_r2[cell_num] <- NA
+    smooth_r2[cell_num] <- NA
+    arima_rmse[cell_num] <- NA
+    smooth_rmse[cell_num] <- NA
+  } else{
+    cell[is.na(cell)] <- 0
+    arima_preds <- smooth_preds <- obs <- numeric(336)
+    for(end in 1:336){
+      obs[end] <- cell[(961-336+end)]
+      train_data <- cell[1:(961-337+end)]
+      ts <- ts(train_data)
+      cell_arima <- auto.arima(ts, max.order = 3, D = 48, ic = "aic", stepwise = TRUE,
+                               approximation = TRUE)
+      #cell_smooth <- HoltWinters(ts, gamma = FALSE)
+      arima_preds[end] <- forecast(cell_arima, h = 1)$mean[1]
+      #smooth_preds[end] <- forecast(cell_smooth, h = 1)$mean[1]
+    }
+  
+    arima_r2[cell_num] <- cor(arima_preds, obs)^2
+    smooth_r2[cell_num] <- cor(smooth_preds, obs)^2
+    arima_rmse[cell_num] <- sqrt(mean((arima_preds-obs)^2))
+    smooth_rmse[cell_num] <- sqrt(mean((smooth_preds-obs)^2))
+  }
+  print(str_c(cell_num, " out of ", ncells, " cells analyzed"))
+}
+```
+
+
+
+```{r}
+days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+path <- rep(NA, 7)
+all_files <- rep(NA, 7*48)
+geohashes <- read.csv("Data/geohashes.csv")[,1:2]
+
+for(i in 1:7){
+  path[i] <- str_c("Data/All_Counts/", days[i])
+  a <- (i-1)*48 + 1
+  b <- (i)*48
+  all_files[a:b] <- str_c(path[i], "/", list.files(path[i]))
+}
+
+all_weeks <- data.frame(geohash = NA)
+for(week in 2:361){
+  index <- 1
+  for(file in all_files){
+    full_data <- read.csv(file)[,-1]
+    short_data <- full_data[,-seq(6,451,5)]
+    sub_data <- short_data[which(short_data$geohash %in% geohashes$geohash),]
+    data <- data.frame(geohash = sub_data$geohash, netdiff = sub_data[,week])
+    names(data) <- c("geohash", str_c("netdiff_", week-1, "-", index))
+    all_weeks <- merge(all_weeks, data, by = "geohash", all = TRUE, suffixes = week-1, no.dups = TRUE)
+    index <- index + 1
+  }
+  print(week)
+}
+
+all_weeks <- data.frame(geohash = NA)
+for(file in all_files){
+    full_data <- read.csv(file)[,-1]
+    short_data <- full_data[,-seq(6,451,5)]
+    sub_data <- short_data[which(short_data$geohash %in% geohashes$geohash),]
+    file_ID <- substr(str_split(file, "/")[[1]][4], 1, 8)
+    week_names <- str_c(file_ID, "-", seq(2,361,1))
+    names(sub_data) <- c("geohash", week_names)
+    all_weeks <- merge(all_weeks, sub_data, by = "geohash", all = TRUE)[!duplicated(all_weeks),]
+    print(file)
+}
+
+library("data.table")
+fwrite(all_weeks, "Data/All_Counts/All_Weeks.csv")
+
+counts <- numeric(360*336)
+for(i in 1:360){
+  a <- (i-1)*336 + 1
+  b <- i*336
+  counts[a:b]seq(i, 360*336, 360)
+}
+
+order_data <- all_weeks[,c(1,counts)]
+fwrite(order_data, "Data/All_Counts/All_Weeks.csv")
+
+```
+
+
+
+```{r}
+all_weeks[is.na(all_weeks)] <- 0
+
+size <- nrow(all_weeks)
+data_len <- ncol(all_weeks)
+test_data <- all_weeks[,(data_len-335):data_len]
+
+arima_r2 <- arima_rmse <- smooth_r2 <- smooth_rmse <- numeric(336)
+for(end in 1:336){
+  arima_preds <- numeric(size)
+  smooth_preds <- numeric(size)
+  for(n in 1:size){
+      cell <- numeric(data_len-336)
+      for(j in 2:(data_len-336)){
+        cell[j] <- data[n,j]
+      }
+      ts <- ts(cell)
+      cell_arima <- auto.arima(ts, max.order = 10, D = 48, ic = "aic", stepwise = TRUE)
+      cell_smooth <- HoltWinters(ts)
+      arima_preds[n] <- forecast(cell_arima, h = 1)$mean[1]
+      smooth_preds[n] <- forecast(cell_smooth, h = 1)$mean[1]
+  }
+  arima_r2[end] <- cor(arima_preds, test_data[,end])^2
+  arima_rmse[end] <- sqrt(mean((arima_preds - test_data[,end])^2))
+  smooth_r2[end] <- cor(smooth_preds, test_data[,end])^2
+  smooth_rmse[end] <- sqrt(mean((smooth_preds - test_data[,end])^2))
+}
+```
+
+
