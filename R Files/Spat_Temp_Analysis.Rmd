@@ -1,0 +1,174 @@
+---
+title: "Spatial-Temporal Modeling"
+author: "Aidan Mullan"
+date: "4/30/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(caret)
+library(dplyr)
+library(e1071)
+library(geohash)
+library(stringr)
+library(forecast)
+```
+
+
+```{r}
+geohashes <- read.csv("Data/geohashes.csv")
+geo_index <- as.character(geohashes$geohash)
+
+winter <- c(rep(c(rep(T, 10), rep(F, 45), rep(T, 5)), 7), rep(T, 10), rep(F, 20))
+spring <- c(rep(c(rep(F, 10), rep(T, 15), rep(F, 35)), 7), rep(F, 10), rep(T, 15), rep(F, 5))
+summer <- c(rep(c(rep(F, 25), rep(T, 15), rep(F, 20)), 7), rep(F, 25), rep(T, 5))
+fall <- c(rep(c(rep(F, 40), rep(T, 15), rep(F, 5)), 7), rep(F, 30))
+
+days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+path <- rep(NA, 7)
+mean_nd <- data.frame(geohash = geo_index)
+
+for(i in 1:7){
+  path[i] <- str_c("Data/All_Counts/", days[i])
+  all_files <- list.files(path[i])
+  num_files <- length(all_files)
+  for(file in all_files){
+    filename <- substr(file, 1, 8)
+    #print(filename)
+    filepath <- str_c(path[i], "/", file)
+    full_data <- read.csv(filepath)[,-1]
+    geo_data <- full_data[which(full_data$geohash %in% geo_index),]
+    data <- geo_data[,-1] 
+    data[is.na(data)] <- 0
+    
+    win_data <- data[,winter]
+    win_means <- rowMeans(win_data)
+    spr_data <- data[,spring]
+    spr_means <- rowMeans(spr_data)
+    sum_data <- data[,summer]
+    sum_means <- rowMeans(sum_data)
+    fall_data <- data[,fall]
+    fall_means <- rowMeans(fall_data)
+    
+    agg_data <- data.frame(geohash = geo_data$geohash, win = win_means, spr = spr_means,
+                           summ = sum_means, fall = fall_means)
+    names(agg_data) <- c("geohash", str_c("Win_", filename), str_c("Spr_", filename), 
+                         str_c("Sum_", filename), str_c("Fall_", filename))
+    mean_nd <- merge(mean_nd, agg_data, by = "geohash", all.Y = T)
+  }
+}
+#write.csv(mean_nd, "Data/Mean_ND.csv")
+```
+
+```{r, warning=FALSE}
+#mean_nd <- read.csv("Data/Mean_ND.csv")
+smooth_nd <- data.frame(geohash = mean_nd$geohash)
+
+for(block in 2:ncol(mean_nd)){
+  #print(names(mean_nd)[block])
+  data <- mean_nd[,c(1,block)]
+  names(data) <- c("geohash", "means")
+  hashes <- gh_decode(data$geohash)
+  data$lat <- scale(hashes$lat)
+  data$lng <- scale(hashes$lng)
+  control <- trainControl(method = "cv", number = 10, classProbs = TRUE)
+  mod_knn <- train(means~lng+lat, data = data, method = "knn",
+                trControl = control, tuneGrid = expand.grid(k = 1:20), metric = "RMSE")
+  smooth_nd[,block] <- predict(mod_knn, newdata = data[,3:4])
+}
+names(smooth_nd) <- names(mean_nd)
+#write.csv(smooth_nd, "Data/Smooth_ND.csv")
+```
+
+```{r}
+#smooth_nd <- read.csv("Data/Smooth_ND.csv")
+days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+path <- rep(NA, 7)
+geo_index <- as.character(smooth_nd$geohash)
+deviation_nd <- data.frame(geohash = geo_index)
+testing_nd <- data.frame(geohash = geo_index)
+
+index = 1
+for(i in 1:7){
+  path[i] <- str_c("Data/All_Counts/", days[i])
+  all_files <- list.files(path[i])
+  for(file in all_files){
+    filename <- substr(file, 1, 8)
+    print(filename)
+    filepath <- str_c(path[i], "/", file)
+    full_data <- read.csv(filepath)[,-1]
+    geo_data <- full_data[which(full_data$geohash %in% geo_index),]
+    data <- geo_data[,c(1,447:450)] 
+    data[is.na(data)] <- 0
+    
+    smooth_column <- (index-1)*4 + 4
+    diff_data <- merge(data, smooth_nd[,c(1,smooth_column)], by = "geohash", all = TRUE)
+    diff_data[,7:10] <- diff_data[,2:5] - diff_data[,6]
+    names(diff_data) <- c("geohash", "week1", "week2", "week3", "week4", "smooth", str_c(filename, "_1"),
+                          str_c(filename, "_2"), str_c(filename, "_3"), str_c(filename, "_4"))
+    deviation_nd <- merge(deviation_nd, diff_data[,c(1,7:10)], by = "geohash", all = TRUE)
+    
+    test_data <- geo_data[,c(1,450)]
+    test_data[is.na(test_data)] <- 0
+    names(test_data) <- c("geohash", filename)
+    testing_nd <- merge(testing_nd, test_data, by = "geohash", all = TRUE)
+    
+    index <- index + 1
+  }
+}
+
+order <- c(seq(1,1344, 4), seq(2,1344,4), seq(3,1344,4), seq(4,1344,4)) + 1
+dev_nd <- deviation_nd[,order]
+#write.csv(orderdev_nd, "Data/Deviation_ND.csv")
+#write.csv(testing_nd, "Data/Testing_ND.csv")
+```
+
+```{r, warning=FALSE}
+#dev_nd <- read.csv("Data/Deviation_ND.csv")
+#testing_nd <- read.csv("Data/Testing_ND.csv")
+#smooth_nd <- read.csv("Data/Smooth_ND.csv")
+size <- ncol(dev_nd)
+tot_cells <- nrow(dev_nd)
+predicts_nd <- matrix(NA, nrow = tot_cells, ncol = 336)
+
+for(time in 1:336){
+  length <- size - (336 - time) - 1
+  for(cell_id in 1:tot_cells){
+    cell <- numeric(length)
+    for(j in 1:length){
+      cell[j] <- dev_nd[cell_id, j]
+    }
+    ts <- ts(cell)
+    cell_arima <- arima(ts, order = c(2,0,2), method = "ML")
+    predicts_nd[cell_id, time] <- predict(cell_arima, n_ahead = 1)$pred[1]
+    if(cell_id %% 500 == 0 | cell_id == tot_cells){print(str_c("Time: ", time, " Cell: ", cell_id))}
+  }
+}
+
+#write.csv(predicts_nd, "Data/Predicts_ND.csv")
+```
+
+```{r}
+smooth_means <- smooth_nd[,(seq(4,1345,4))]
+preds <- smooth_means[,2] + predicts_nd[,1]
+obs <- testing_nd[,2]
+summary(preds)
+summary(obs)
+cor(preds, obs)^2
+sqrt(mean((preds-obs)^2))
+
+qqnorm(obs-preds)
+qqline(obs-preds)
+
+par(mfrow = c(2,2))
+hist(obs-preds)
+```
+
+
+
+
+

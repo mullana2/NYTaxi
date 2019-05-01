@@ -150,6 +150,9 @@ plot(predict_data$observed, predict_data$observed - predict_data$arima_predict, 
      ylab = "Residual", main = "ARMA Residuals")
 plot(predict_data$observed, predict_data$observed - predict_data$knn_predict, xlab = "Net-Pickups",
      ylab = "Residual", main = "KNN Residuals")
+qqnorm(obs-quad_preds)
+qqline(obs-quad_preds)
+
 ```
 
 ```{r}
