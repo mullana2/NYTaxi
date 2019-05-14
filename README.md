@@ -1,5 +1,5 @@
 # NYTaxi
-Analysis of 10 years and over 1.5 billion fares of taxi data in New York City
+Analysis of 10 years and over 1.5 billion fares of taxi data in New York City. This research was conducted in collaboration with Dandan Ru, Zhenni Ye, and Lyu Zheng (Univeristy of California, Berkeley)
 
 ## Research
 
