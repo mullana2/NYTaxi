@@ -123,11 +123,11 @@ for(i in 1:7){
 
 order <- c(seq(1,1344, 4), seq(2,1344,4), seq(3,1344,4), seq(4,1344,4)) + 1
 dev_nd <- deviation_nd[,order]
-#write.csv(orderdev_nd, "Data/Deviation_ND.csv")
+#write.csv(dev_nd, "Data/Deviation_ND.csv")
 #write.csv(testing_nd, "Data/Testing_ND.csv")
 ```
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, fig.height = 4, fig.width = 6}
 #dev_nd <- read.csv("Data/Deviation_ND.csv")
 #testing_nd <- read.csv("Data/Testing_ND.csv")
 #smooth_nd <- read.csv("Data/Smooth_ND.csv")
@@ -149,23 +149,46 @@ for(time in 1:336){
   }
 }
 
+## Evaluating Model Fit
+test <- sample_n(dev_nd, 10)
+cell1 <- cell2 <- cell3 <- cell4 <- cell5 <- cell6 <- cell7 <- cell8 <- cell9 <- cell10 <- numeric(1344)
+for(j in 1:1344){
+  cell1[j] <- test[1,j]; cell6[j] <- test[6,j]
+  cell2[j] <- test[2,j]; cell7[j] <- test[7,j]
+  cell3[j] <- test[3,j]; cell8[j] <- test[8,j]
+  cell4[j] <- test[4,j]; cell9[j] <- test[9,j]
+  cell5[j] <- test[5,j]; cell10[j] <- test[10,j]
+}
+
+par(mfrow = c(2,3), mai = c(0.6, 0.6, 0.2, 0.2))
+plot(ts(cell1), ylab = "Observed", main = "Cell 1")
+acf(ts(cell1)); pacf(ts(cell1))
+mod1 <- arima(ts(cell1), order = c(2,0,2), method = "ML")
+plot(mod1$residuals, ylab = "Residuals", main = "ARMA(2,2)")
+acf(mod1$residuals); pacf(mod1$residuals)
 #write.csv(predicts_nd, "Data/Predicts_ND.csv")
 ```
 
 ```{r}
-smooth_means <- smooth_nd[,(seq(4,1345,4))]
-preds <- smooth_means[,2] + predicts_nd[,1]
-obs <- testing_nd[,2]
-summary(preds)
-summary(obs)
-cor(preds, obs)^2
-sqrt(mean((preds-obs)^2))
+#smooth_nd <- read.csv("Data/Smooth_ND.csv")
+#predicts_nd <- read.csv("Data/Predicts_ND.csv")
+r2 <- numeric(336)
+rmse <- numeric(336)
+for(i in 1:336){
+  smooth_means <- smooth_nd[,(seq(4,1345,4))]
+  preds <- smooth_means[,i] + predicts_nd[,i]
+  obs <- testing_nd[,i+1]
+  r2[i] <- cor(preds, obs)^2
+  rmse[i] <- sqrt(mean((preds-obs)^2))
+}
 
+r2[21]; rmse[21]
 qqnorm(obs-preds)
 qqline(obs-preds)
 
 par(mfrow = c(2,2))
 hist(obs-preds)
+
 ```
 
 

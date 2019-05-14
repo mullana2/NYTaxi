@@ -17,6 +17,8 @@ library(geohash)
 library(stringr)
 library(ggplot2)
 library(ggmap)
+
+#AIzaSyBl7Qb---lw9mSC6_PEt398RmBRGD---WN8UvQf4
 ```
 
 ```{r}
@@ -73,16 +75,16 @@ predict_data <- subset(sub_data, subset = lowbound >= 159.064 & upbound <= 148.4
 
 predict_data$obscolor <- cut(predict_data$observed,
                           breaks = c(-100, -5,-1,0,5,100),
-                          labels = c("(-55,6)", "(-5,-1)", "0", "(1,5)", "(6,58)"))
+                          labels = c("(-55,-6)", "(-5,-1)", "0", "(1,5)", "(6,58)"))
 predict_data$knncolor <- cut(predict_data$knn_predict,
                           breaks = c(-100, -5,-1,0.5,5,100),
-                          labels = c("(-33,6)", "(-5,-1)", "0", "(1,5)", "(6,22)"))
+                          labels = c("(-33,-6)", "(-5,-1)", "0", "(1,5)", "(6,22)"))
 predict_data$tscolor <- cut(predict_data$smooth_predict,
                           breaks = c(-100, -5,-1,0.5,5,100),
-                          labels = c("(-52,6)", "(-5,-1)", "0", "(1,5)", "(6,55)"))
+                          labels = c("(-52,-6)", "(-5,-1)", "0", "(1,5)", "(6,55)"))
 predict_data$armacolor <- cut(predict_data$arima_predict,
                           breaks = c(-100, -5,-1,0.5,5,100),
-                          labels = c("(-52,6)", "(-5,-1)", "0", "(1,5)", "(6,55)"))
+                          labels = c("(-52,-6)", "(-5,-1)", "0", "(1,5)", "(6,55)"))
 
 zoom_map_raw <- get_map(location = c(-73.98, 40.76), zoom = 12, scale = 2)
 zoom_map <- ggmap(zoom_map_raw, legend = "none")
@@ -91,7 +93,7 @@ obs_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE, 
                                        aes(x = Lon, y = Lat, color = obscolor)) + 
   scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
                      name = "Net Pickups") +
-  ggtitle("Observed Net Pickups for Manhattan: Mon 8AM") +
+  ggtitle("Manhattan Observed Net Pickups: June 20th, 2016 at 10am") +
   xlab("") + ylab("") +
   theme(axis.line = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
@@ -121,7 +123,7 @@ arma_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE,
                                        aes(x = Lon, y = Lat, color = armacolor)) + 
   scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
                      name = "Net Pickups") +
-  ggtitle("ARIMA Predicted Net Pickups for Manhattan: Mon 8AM") +
+  ggtitle("ARIMA Predicted Net Pickups: June 20th, 2016 at 10") +
   xlab("") + ylab("") +
   theme(axis.line = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
@@ -231,6 +233,7 @@ colMeans(smooth_rmse)
 
 median(smooth_rmse)
 max(smooth_rmse)
+mean(colMeans(smooth_r2))
 mean(colMeans(smooth_rmse))
 
 par(mfrow = c(1,2))
@@ -278,7 +281,167 @@ points(1:7,as.numeric(colMeans(smooth_rmse)), col = "navyblue", pch = 16)
 axis(1, labels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
      at = 1:7, cex.axis = 0.7)
 
+par(mfrow = c(1,2))
+plot(rowMeans(smooth_r2)~seq(0,23.5, 0.5), type = "l", ylim = c(0,1), xlab = "Hour", ylab = expression(R^2),
+     main = bquote("Mean"~R^2~"and RMSE by Time of Day"), col = "navyblue")
+points(rowMeans(smooth_r2)~seq(0,23.5, 0.5), pch = 16, col = "navyblue", cex = 0.7)
+par(new = T)
+plot(rowMeans(smooth_rmse)~seq(0,23.5, 0.5), type = "l", ylim = c(0,4), xlab = NA, ylab = NA,
+     xlim = c(0,24), font.main = 1, col = "dodgerblue", axes = F)
+axis(side = 4)
+mtext(side = 4, line = 2, "RMSE")
+points(rowMeans(smooth_rmse)~seq(0,23.5, 0.5), pch = 16, col = "dodgerblue", cex = 0.7)
+legend("bottomright", legend = c(expression(R^2), "RMSE"), col = c("navyblue", "dodgerblue"), lty = 1)
 
+par(mfrow =c(1,2))
+plot(1:7,as.numeric(colMeans(smooth_r2)), type = "l", ylim = c(0.2,0.9), xlab = "Day",
+     ylab = expression(R^2), main = bquote("Mean"~R^2~"and RMSE by Day of the Week"), xaxt = "n")
+points(1:7,as.numeric(colMeans(smooth_r2)), col = "navyblue", pch = 16)
+axis(1, labels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
+     at = 1:7, cex.axis = 0.7)
+par(new = T)
+plot(1:7,as.numeric(colMeans(smooth_rmse)), type = "l", ylim = c(0,4), xlab = NA, ylab = NA,
+     axes = F, font.main = 1, col = "dodgerblue")
+points(1:7,as.numeric(colMeans(smooth_rmse)), col = "dodgerblue", pch = 16)
+axis(side = 4)
+mtext(side = 4, line = 2, "RMSE")
+legend("bottomright", legend = c(expression(R^2), "RMSE"), col = c("navyblue", "dodgerblue"), lty = 1)
 ```
+
+```{r}
+URL <- "https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page"
+
+links <- read_html(URL) %>% html_nodes("a") %>% html_attr('href')
+yellow_index <- str_detect(links, "yellow_tripdata")
+yellow_data <- links[yellow_index]
+
+data <- read_csv(yellow_data[30])
+
+sub_june2016 <- data[,c(2,3,6,7,10,11)]
+
+## Split datetime variables into separate day and time variables
+firstsplit_june2016 <- sub_june2016 %>% separate(tpep_pickup_datetime, sep = " ", n = 2,
+                                                 into = c("pickup_date", "pickup_time")) %>%
+                                        separate(tpep_dropoff_datetime, sep = " ", n = 2,
+                                                 into = c("dropoff_date", "dropoff_time"))
+
+## Split time into hour, minute, second and split day into year, month, and day
+clean_june2016 <- firstsplit_june2016 %>% separate(pickup_time, sep = ":", n = 3,
+                                                  into = c("PU_hour", "PU_minute", "PU_second")) %>%
+                                         separate(pickup_date, sep = "-", n = 3,
+                                                  into = c("PU_year", "PU_month", "PU_day")) %>%
+                                         separate(dropoff_time, sep = ":", n = 3,
+                                                  into = c("DO_hour", "DO_minute", "DO_second")) %>%
+                                         separate(dropoff_date, sep = "-", n = 3,
+                                                  into = c("DO_year", "DO_month", "DO_day"))
+
+pu_june2016_raw <- subset(clean_june2016, subset = PU_hour == 10 & PU_minute <= 30)[,c(3:5,9:11,13:16)]
+pu_june2016 <- pu_june2016_raw[,c(1:3,7:8)]
+pu_june2016 <- subset(pu_june2016, subset = pickup_latitude != 0 & pickup_longitude != 0)
+
+do_june2016_raw <- subset(clean_june2016, subset = DO_hour == 10 & DO_minute <= 30)[,c(3:5,9:11,13:16)]
+do_june2016 <- do_june2016_raw[,c(4:6,9:10)]
+do_june2016 <- subset(do_june2016, subset = dropoff_latitude != 0 & dropoff_longitude != 0)
+
+zoom_map_raw <- get_map(location = c(-73.98, 40.76), zoom = 12, scale = 2)
+zoom_map <- ggmap(zoom_map_raw, legend = "none")
+
+
+pickup_map <- zoom_map + geom_point(data = pu_june2016, size = 0.1, na.rm = TRUE, shape = 15,
+                                    colour = "navyblue", alpha = .2,
+                                       aes(x = pickup_longitude, y = pickup_latitude)) + 
+  xlab("") + ylab("") +
+  ggtitle("Manhattan Taxi Pickups: June 20, 2016 at 10AM") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5))
+  
+dropoff_map <- zoom_map + geom_point(data = do_june2016, size = 0.1, na.rm = TRUE, shape = 15,
+                                     colour = "darkred", alpha = .2,
+                                       aes(x = dropoff_longitude, y = dropoff_latitude)) + 
+  xlab("") + ylab("") +
+  ggtitle("Manhattan Taxi Dropoffs: June 20, 2016 at 10AM") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5))
+
+pickup_map; dropoff_map
+ggsave(filename = "Images/Paper/Raw_Pickups.jpeg", plot = pickup_map,
+       width = 7, height = 7, device = "jpeg")
+ggsave(filename = "Images/Paper/Raw_Dropoffs.jpeg", plot = dropoff_map,
+       width = 7, height = 7, device = "jpeg")
+```
+
+```{r}
+obs <- testing_nd[,c(1,22)]
+means <- mean_nd[, c(1,84)]
+smooth <- smooth_nd[,c(1,84)]
+preds <- predicts_nd[,21]
+
+Mon10 <- data.frame(geohash = obs$geohash, obs = obs$Mon_10_0, means = means$Sum_Mon_10_0, 
+                    smooth = smooth$Sum_Mon_10_0, preds = preds)
+hashes <- gh_decode(Mon10$geohash)
+Mon10$Lat <- hashes$lat
+Mon10$Lon <- hashes$lng
+
+Mon10$obs_color <- cut(Mon10$obs,
+                          breaks = c(-300, -5,-0.5,0.5,5,300),
+                          labels = c("(-219,-6)", "(-5,-1)", "0", "(1,5)", "(6,76)"))
+Mon10$mean_color <- cut(Mon10$means,
+                          breaks = c(-300, -5,-0.5,0.5,5,300),
+                          labels = c("(-44,-6)", "(-5,-1)", "0", "(1,5)", "(6,57)"))
+Mon10$smooth_color <- cut(Mon10$smooth,
+                          breaks = c(-300, -5,-0.5,0.5,5,300),
+                          labels = c("(-15,-6)", "(-5,-1)", "0", "(1,5)", "(6,21)"))
+Mon10$pred_color <- cut(Mon10$preds,
+                          breaks = c(-300, -5,-0.5,0.5,5,300),
+                          labels = c("(-202,-6)", "(-5,-1)", "0", "(1,5)", "(6,37)"))
+
+Mon10_obs_map <- zoom_map + geom_point(data = Mon10, size = 0.9, na.rm = TRUE, shape = 15,
+                                       aes(x = Lon, y = Lat, color = obs_color)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("Observed") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
+        legend.position = "none")
+Mon10_mean_map <- zoom_map + geom_point(data = Mon10, size = 1.2, na.rm = TRUE, shape = 15,
+                                       aes(x = Lon, y = Lat, color = mean_color)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  xlab("") + ylab("") +
+  ggtitle("Cell Means for Summer Mondays at 10am") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
+        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
+Mon10_smooth_map <- zoom_map + geom_point(data = Mon10, size = 1.2, na.rm = TRUE, shape = 15,
+                                       aes(x = Lon, y = Lat, color = smooth_color)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("KNN Smooth Means for Summer Mondays at 10am") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
+        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
+Mon10_pred_map <- zoom_map + geom_point(data = Mon10, size = 1.2, na.rm = TRUE, shape = 15,
+                                       aes(x = Lon, y = Lat, color = pred_color)) + 
+  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
+                     name = "Net Pickups") +
+  ggtitle("Predict") +
+  xlab("") + ylab("") +
+  theme(axis.line = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
+        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
+
+ggsave(filename = "Images/Presentation/ObsMap.jpeg", plot = Mon10_obs_map,
+       width = 7, height = 7, device = "jpeg")
+ggsave(filename = "Images/Paper/MeanMap.jpeg", plot = Mon10_mean_map,
+       width = 7, height = 7, device = "jpeg")
+ggsave(filename = "Images/Paper/SmoothMap.jpeg", plot = Mon10_smooth_map,
+       width = 7, height = 7, device = "jpeg")
+ggsave(filename = "Images/Presentation/PredMap.jpeg", plot = Mon10_pred_map,
+       width = 7, height = 7, device = "jpeg")
+```
+
+
 
 
