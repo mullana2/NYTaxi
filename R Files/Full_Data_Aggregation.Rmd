@@ -25,12 +25,16 @@ library(tidyverse)
 library(geohash)
 ```
 
+This R file retrieves all of the raw data from the New York City TLC website, then applies a geohash grid and aggregate the net pickups for each grid cell per day of the week and half hour of the day. The aggregation is divided into two sections by hour of the day, 00-11 and 12-23, in order to break up the computation. This file takes many hours to run in its entirety. 
+
+
 ```{r}
 ## Retrieve url links to all data set
 URL <- "https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page"
 
 links <- read_html(URL) %>% html_nodes("a") %>% html_attr('href')
 
+## Subset only to Yellow Cabs
 yellow_index <- str_detect(links, "yellow_tripdata")
 yellow_data <- links[yellow_index][25:120][c(1:6,13:120)][1:90]
 
@@ -254,7 +258,7 @@ for(link in yellow_chrono){
   print(link_ID)
   short_data <- raw_data[,c(2,3,6,7,10,11)]
   
-  ## Split datetime into separate date and time variables
+  ## Split datetime into separate date and time variables, account for difference in reporting
   if(str_detect(link, "2009")){
       firstsplit <- short_data %>% separate(Trip_Pickup_DateTime, sep = " ", n = 2,
                                             into = c("pickup_date", "pickup_time")) %>%
@@ -344,6 +348,7 @@ for(link in yellow_chrono){
     temp <- subset(all_counts, subset = weeknum == i)
     temp$halfhour <- as.numeric(temp$halfhour)
     
+    ## Subset data by day and half-hour, merge each month to the proper dataset
     Mon_00_0 <- merge(Mon_00_0, subset(temp, subset = weekday == "Monday" & halfhour == 0)[,c(1,7)],
                       by = "geohash", all = TRUE, 
                       suffixes = c("", week_ID))[!duplicated(Mon_00_0$geohash),]
@@ -856,7 +861,9 @@ for(link in yellow_chrono){
                       suffixes = c("", week_ID))[!duplicated(Sun_11_5$geohash),]
   }
   
+  ## Sanity check
   print("Done")
+  
   ## Erase all created data frames to minimize memory usage
   rm(raw_data); rm(short_data); rm(clean_data); rm(firstsplit)
   rm(pu_data); rm(pu_main); rm(pu_counts); rm(do_data); rm(do_main); rm(do_counts)
@@ -1483,6 +1490,10 @@ for(link in yellow_chrono){
   rm(pu_data); rm(pu_main); rm(pu_counts); rm(do_data); rm(do_main); rm(do_counts)
   rm(all_counts); rm(temp);
 }
+```
+
+```{r}
+## Write all compressed data to csv files
 
 write.csv(Mon_12_0, file = "Data/All_Counts/Monday/Mon_12_0.csv")
 write.csv(Mon_12_5, file = "Data/All_Counts/Monday/Mon_12_5.csv")
@@ -1658,8 +1669,6 @@ write.csv(Sun_22_0, file = "Data/All_Counts/Sunday/Sun_22_0.csv")
 write.csv(Sun_22_5, file = "Data/All_Counts/Sunday/Sun_22_.csv5")
 write.csv(Sun_23_0, file = "Data/All_Counts/Sunday/Sun_23_0.csv")
 write.csv(Sun_23_5, file = "Data/All_Counts/Sunday/Sun_23_5.csv")
-
-
 ```
 
 

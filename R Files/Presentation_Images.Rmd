@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+## Load required packages
 library(caret)
 library(dplyr)
 library(e1071)
@@ -20,13 +21,16 @@ library(ggmap)
 
 ```
 
+This file creates all the maps and visuals used in either the presentation or paper for this research
+
 ```{r}
-nd2009 <- read.table("Data/nd2009.rtf", header = TRUE, sep = ",")
-nd2010 <- read.table("Data/nd2009.rtf", header = TRUE, sep = ",")
-nd2011 <- read.table("Data/nd2009.rtf", header = TRUE, sep = ",")
-nd2014 <- read.table("Data/nd2009.rtf", header = TRUE, sep = ",")
-nd2015 <- read.table("Data/nd2009.rtf", header = TRUE, sep = ",")
-nd2016 <- read.table("Data/nd2009.rtf", header = TRUE, sep = ",")
+## Read in sample data from Manhattan
+nd2009 <- read.table("Data/Sample_Data/nd2009.rtf", header = TRUE, sep = ",")
+nd2010 <- read.table("Data/Sample_Data/nd2009.rtf", header = TRUE, sep = ",")
+nd2011 <- read.table("Data/Sample_Data/nd2009.rtf", header = TRUE, sep = ",")
+nd2014 <- read.table("Data/Sample_Data/nd2009.rtf", header = TRUE, sep = ",")
+nd2015 <- read.table("Data/Sample_Data/nd2009.rtf", header = TRUE, sep = ",")
+nd2016 <- read.table("Data/Sample_Data/nd2009.rtf", header = TRUE, sep = ",")
 
 nd2009$length <- str_length(nd2009[,1])
 nd2010$length <- str_length(nd2010[,1])
@@ -35,6 +39,7 @@ nd2014$length <- str_length(nd2014[,1])
 nd2015$length <- str_length(nd2015[,1])
 nd2016$length <- str_length(nd2016[,1])
 
+## Extract only the geohash codes for all cells
 data09 <- subset(nd2009, subset = length == 7)[-c(1,2),]
 names(data09) <- c("geohash", "length09")
 data10 <- subset(nd2010, subset = length == 7)[-c(1,2),]
@@ -48,6 +53,7 @@ names(data15) <- c("geohash", "length15")
 data16 <- subset(nd2016, subset = length == 7)[-c(1,2),]
 names(data16) <- c("geohash", "length16")
 
+## Create master list of geohash IDs, write to csv
 geohashes <- merge(data09, data10, by = "geohash", all = TRUE)
 geohashes <- merge(geohashes, data11, by = "geohash", all = TRUE, suffixes = "a")
 geohashes <- merge(geohashes, data14, by = "geohash", all = TRUE, suffixes = "b")
@@ -57,257 +63,12 @@ geohashes <- merge(geohashes, data16, by = "geohash", all = TRUE, suffixes = "d"
 ```
 
 
-```{r, fig.height = 5, fig.width = 5}
-full_data <- read.csv("Data/Mon08_Predicts.csv")
-geohashes <- read.csv("Data/geohashes.csv")
-
-Man_index <- which(full_data$geohash %in% geohashes$geohash)
-sub_data <- full_data[Man_index,]
-
-hashes <- gh_decode(sub_data$geohash)
-sub_data$Lat <- hashes$lat
-sub_data$Lon <- hashes$lng
-sub_data$lowbound <- sub_data$Lat - 1.6*sub_data$Lon
-sub_data$upbound <- sub_data$Lat - 1.454545*sub_data$Lat
-predict_data <- subset(sub_data, subset = lowbound >= 159.064 & upbound <= 148.4327)
-
-
-predict_data$obscolor <- cut(predict_data$observed,
-                          breaks = c(-100, -5,-1,0,5,100),
-                          labels = c("(-55,-6)", "(-5,-1)", "0", "(1,5)", "(6,58)"))
-predict_data$knncolor <- cut(predict_data$knn_predict,
-                          breaks = c(-100, -5,-1,0.5,5,100),
-                          labels = c("(-33,-6)", "(-5,-1)", "0", "(1,5)", "(6,22)"))
-predict_data$tscolor <- cut(predict_data$smooth_predict,
-                          breaks = c(-100, -5,-1,0.5,5,100),
-                          labels = c("(-52,-6)", "(-5,-1)", "0", "(1,5)", "(6,55)"))
-predict_data$armacolor <- cut(predict_data$arima_predict,
-                          breaks = c(-100, -5,-1,0.5,5,100),
-                          labels = c("(-52,-6)", "(-5,-1)", "0", "(1,5)", "(6,55)"))
-
-zoom_map_raw <- get_map(location = c(-73.98, 40.76), zoom = 12, scale = 2)
-zoom_map <- ggmap(zoom_map_raw, legend = "none")
-
-obs_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE, shape = 15,
-                                       aes(x = Lon, y = Lat, color = obscolor)) + 
-  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
-                     name = "Net Pickups") +
-  ggtitle("Manhattan Observed Net Pickups: June 20th, 2016 at 10am") +
-  xlab("") + ylab("") +
-  theme(axis.line = element_blank(), axis.text = element_blank(),
-        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
-        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
-
-knn_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE, shape = 15,
-                                       aes(x = Lon, y = Lat, color = knncolor)) + 
-  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
-                     name = "Net Pickups") +
-  ggtitle("KNN Predicted Net Pickups for Manhattan: Mon 8AM") +
-  xlab("") + ylab("") +
-  theme(axis.line = element_blank(), axis.text = element_blank(),
-        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
-        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
-
-ts_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE, shape = 15,
-                                       aes(x = Lon, y = Lat, color = tscolor)) + 
-  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
-                     name = "Net Pickups") +
-  ggtitle("Exponential Smoothing Predicted Net Pickups for Manhattan: Mon 8AM") +
-  xlab("") + ylab("") +
-  theme(axis.line = element_blank(), axis.text = element_blank(),
-        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
-        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
-
-arma_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE, shape = 15,
-                                       aes(x = Lon, y = Lat, color = armacolor)) + 
-  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
-                     name = "Net Pickups") +
-  ggtitle("ARIMA Predicted Net Pickups: June 20th, 2016 at 10") +
-  xlab("") + ylab("") +
-  theme(axis.line = element_blank(), axis.text = element_blank(),
-        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
-        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
-
-cor(predict_data$observed, predict_data$knn_predict)^2 # .50406
-cor(predict_data$observed, predict_data$smooth_predict)^2 # .90753
-cor(predict_data$observed, predict_data$arima_predict)^2 # .90149
-sqrt(mean((predict_data$observed - predict_data$knn_predict)^2)) # 3.1475
-sqrt(mean((predict_data$observed - predict_data$smooth_predict)^2)) # 1.3674
-sqrt(mean((predict_data$observed - predict_data$arima_predict)^2)) # 1.4307
-
-ggsave(filename = "Images/Mon8_ObsMap.jpeg", plot = obs_map,
-       width = 7, height = 7, device = "jpeg")
-ggsave(filename = "Images/Mon8_KnnMap.jpeg", plot = knn_map,
-       width = 7, height = 7, device = "jpeg")
-ggsave(filename = "Images/Mon8_TsMap.jpeg", plot = ts_map,
-       width = 7, height = 7, device = "jpeg")
-ggsave(filename = "Images/Mon8_ARMAMap.jpeg", plot = arma_map,
-       width = 7, height = 7, device = "jpeg")
-
-par(mfrow = c(2,2))
-plot(predict_data$observed, predict_data$observed - predict_data$smooth_predict, xlab = "Net-Pickups",
-     ylab = "Residual", main = "HW Smoothing Model Residuals")
-plot(predict_data$observed, predict_data$observed - predict_data$arima_predict, xlab = "Net-Pickups",
-     ylab = "Residual", main = "ARMA Residuals")
-plot(predict_data$observed, predict_data$observed - predict_data$knn_predict, xlab = "Net-Pickups",
-     ylab = "Residual", main = "KNN Residuals")
-qqnorm(obs-quad_preds)
-qqline(obs-quad_preds)
-
-```
-
 ```{r}
-predict_data$knn_resid <- predict_data$observed - predict_data$knn_predict
-predict_data$arima_resid <- predict_data$observed - predict_data$arima_predict
-predict_data$smooth_resid <- predict_data$observed - predict_data$smooth_predict
+#####
+## Map of Observed Pickups and Dropoffs
+#####
 
-summary(predict_data$knn_resid)
-summary(predict_data$arima_resid)
-summary(predict_data$smooth_resid)
-
-predict_data$knn_rescolor <- cut(predict_data$knn_resid,
-                          breaks = c(-100, -3,-0.5,0.5,3,100),
-                          labels = c("(-38,-3)", "(-3,-1)", "0", "(1,3)", "(3,41)"))
-predict_data$arima_rescolor <- cut(predict_data$arima_resid,
-                          breaks = c(-100, -3,-0.5,0.5,3,100),
-                          labels = c("(-10,-3)", "(-3,-1)", "0", "(1,3)", "(3,16)"))
-predict_data$smooth_rescolor <- cut(predict_data$smooth_resid,
-                          breaks = c(-100, -3,-0.5,0.5,3,100),
-                          labels = c("(-10,-3)", "(-3,-1)", "0", "(1,3)", "(3,17)"))
-
-knn_res_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE, shape = 15,
-                                       aes(x = Lon, y = Lat, color = knn_rescolor)) + 
-  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
-                     name = "Net Pickups") +
-  ggtitle("KNN Residuals for Manhattan: Mon 8AM") +
-  xlab("") + ylab("") +
-  theme(axis.line = element_blank(), axis.text = element_blank(),
-        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
-        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
-
-arma_res_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE, shape = 15,
-                                       aes(x = Lon, y = Lat, color = arima_rescolor)) + 
-  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
-                     name = "Net Pickups") +
-  ggtitle("ARIMA Residuals for Manhattan: Mon 8AM") +
-  xlab("") + ylab("") +
-  theme(axis.line = element_blank(), axis.text = element_blank(),
-        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
-        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
-
-smooth_res_map <- zoom_map + geom_point(data = predict_data, size = 0.9, na.rm = TRUE, shape = 15,
-                                       aes(x = Lon, y = Lat, color = smooth_rescolor)) + 
-  scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
-                     name = "Net Pickups") +
-  ggtitle("HW Smoothing Residuals for Manhattan: Mon 8AM") +
-  xlab("") + ylab("") +
-  theme(axis.line = element_blank(), axis.text = element_blank(),
-        axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
-        legend.title = element_text(size = 8), legend.text = element_text(size = 9))
-
-ggsave(filename = "Images/Mon8_KnnResMap.jpeg", plot = knn_res_map,
-       width = 7, height = 7, device = "jpeg")
-ggsave(filename = "Images/Mon8_TsResMap.jpeg", plot = smooth_res_map,
-       width = 7, height = 7, device = "jpeg")
-ggsave(filename = "Images/Mon8_ARMAResMap.jpeg", plot = arma_res_map,
-       width = 7, height = 7, device = "jpeg")
-```
-
-
-```{r, fig.height = 3, fig.width = 6}
-knn_r2 <- read.csv("Data/Results/knn_r2.csv")[,-1]
-arima_r2 <- read.csv("Data/Results/arima_r2.csv")[,-1]
-smooth_r2 <- read.csv("Data/Results/expsmooth_r2.csv")[,-1]
-knn_rmse <- read.csv("Data/Results/knn_rmse.csv")[,-1]
-arima_rmse <- read.csv("Data/Results/arima_rmse.csv")[,-1]
-smooth_rmse <- read.csv("Data/Results/expsmooth_rmse.csv")[,-1]
-
-colMeans(knn_r2)
-colMeans(arima_r2)
-colMeans(smooth_r2)
-
-colMeans(knn_rmse)
-colMeans(arima_rmse)
-colMeans(smooth_rmse)
-
-median(smooth_rmse)
-max(smooth_rmse)
-mean(colMeans(smooth_r2))
-mean(colMeans(smooth_rmse))
-
-par(mfrow = c(1,2))
-plot(rowMeans(knn_r2)~seq(0,23.5, 0.5), type = "l", ylim = c(0,1), xlab = "Hour", ylab = expression(R^2),
-     main = bquote("Mean"~R^2~"by Time of Day"))
-lines(rowMeans(arima_r2)~seq(0,23.5, 0.5), col = "dodgerblue")
-lines(rowMeans(smooth_r2)~seq(0,23.5, 0.5), col = "navyblue")
-legend("bottomleft", legend = c("KNN", "ARMA", "HW Smoothing"), col = c("black", "dodgerblue", "navyblue"),
-       lty = 1)
-points(rowMeans(knn_r2)~seq(0,23.5, 0.5), pch = 16, cex = 0.7)
-points(rowMeans(arima_r2)~seq(0,23.5, 0.5), pch = 16, col = "dodgerblue", cex = 0.7)
-points(rowMeans(smooth_r2)~seq(0,23.5, 0.5), pch = 16, col = "navyblue", cex = 0.7)
-
-plot(rowMeans(knn_rmse)~seq(0,23.5, 0.5), type = "l", ylim = c(0,6), xlab = "Hour", ylab = "RMSE",
-     main = bquote("Mean RMSE by Time of Day"), xlim = c(0,24), font.main = 1)
-lines(rowMeans(arima_rmse)~seq(0,23.5, 0.5), col = "dodgerblue")
-lines(rowMeans(smooth_rmse)~seq(0,23.5, 0.5), col = "navyblue")
-legend("topright", legend = c("KNN", "ARMA", "HW Smoothing"), col = c("black", "dodgerblue", "navyblue"),
-       lty = 1)
-points(rowMeans(knn_rmse)~seq(0,23.5, 0.5), pch = 16, cex = 0.7)
-points(rowMeans(arima_rmse)~seq(0,23.5, 0.5), pch = 16, col = "dodgerblue", cex = 0.7)
-points(rowMeans(smooth_rmse)~seq(0,23.5, 0.5), pch = 16, col = "navyblue", cex = 0.7)
-
-plot(1:7,as.numeric(colMeans(knn_r2)), type = "l", ylim = c(0.2,0.9), xlab = "Day", ylab = expression(R^2),
-     main = bquote("Mean"~R^2~"by Day of the Week"), xaxt = "n")
-lines(as.numeric(colMeans(arima_r2)), col = "dodgerblue")
-lines(as.numeric(colMeans(smooth_r2)), col = "navyblue")
-legend("bottomleft", legend = c("KNN", "ARMA", "HW Smoothing"), col = c("black", "dodgerblue", "navyblue"),
-       lty = 1)
-points(1:7,as.numeric(colMeans(knn_r2)), pch = 16)
-points(1:7,as.numeric(colMeans(arima_r2)), col = "dodgerblue", pch = 16)
-points(1:7,as.numeric(colMeans(smooth_r2)), col = "navyblue", pch = 16)
-axis(1, labels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
-     at = 1:7, cex.axis = 0.7)
-
-plot(1:7,as.numeric(colMeans(knn_rmse)), type = "l", ylim = c(0,4), xlab = "Day", ylab = expression(R^2),
-     main = bquote("Mean RMSE by Day of the Week"), xaxt = "n", font.main = 1)
-lines(as.numeric(colMeans(arima_rmse)), col = "dodgerblue")
-lines(as.numeric(colMeans(smooth_rmse)), col = "navyblue")
-legend("bottomleft", legend = c("KNN", "ARMA", "HW Smoothing"), col = c("black", "dodgerblue", "navyblue"),
-       lty = 1)
-points(1:7,as.numeric(colMeans(knn_rmse)), pch = 16)
-points(1:7,as.numeric(colMeans(arima_rmse)), col = "dodgerblue", pch = 16)
-points(1:7,as.numeric(colMeans(smooth_rmse)), col = "navyblue", pch = 16)
-axis(1, labels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
-     at = 1:7, cex.axis = 0.7)
-
-par(mfrow = c(1,2))
-plot(rowMeans(smooth_r2)~seq(0,23.5, 0.5), type = "l", ylim = c(0,1), xlab = "Hour", ylab = expression(R^2),
-     main = bquote("Mean"~R^2~"and RMSE by Time of Day"), col = "navyblue")
-points(rowMeans(smooth_r2)~seq(0,23.5, 0.5), pch = 16, col = "navyblue", cex = 0.7)
-par(new = T)
-plot(rowMeans(smooth_rmse)~seq(0,23.5, 0.5), type = "l", ylim = c(0,4), xlab = NA, ylab = NA,
-     xlim = c(0,24), font.main = 1, col = "dodgerblue", axes = F)
-axis(side = 4)
-mtext(side = 4, line = 2, "RMSE")
-points(rowMeans(smooth_rmse)~seq(0,23.5, 0.5), pch = 16, col = "dodgerblue", cex = 0.7)
-legend("bottomright", legend = c(expression(R^2), "RMSE"), col = c("navyblue", "dodgerblue"), lty = 1)
-
-par(mfrow =c(1,2))
-plot(1:7,as.numeric(colMeans(smooth_r2)), type = "l", ylim = c(0.2,0.9), xlab = "Day",
-     ylab = expression(R^2), main = bquote("Mean"~R^2~"and RMSE by Day of the Week"), xaxt = "n")
-points(1:7,as.numeric(colMeans(smooth_r2)), col = "navyblue", pch = 16)
-axis(1, labels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
-     at = 1:7, cex.axis = 0.7)
-par(new = T)
-plot(1:7,as.numeric(colMeans(smooth_rmse)), type = "l", ylim = c(0,4), xlab = NA, ylab = NA,
-     axes = F, font.main = 1, col = "dodgerblue")
-points(1:7,as.numeric(colMeans(smooth_rmse)), col = "dodgerblue", pch = 16)
-axis(side = 4)
-mtext(side = 4, line = 2, "RMSE")
-legend("bottomright", legend = c(expression(R^2), "RMSE"), col = c("navyblue", "dodgerblue"), lty = 1)
-```
-
-```{r}
+## Retrieve data from TLC website
 URL <- "https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page"
 
 links <- read_html(URL) %>% html_nodes("a") %>% html_attr('href')
@@ -334,18 +95,21 @@ clean_june2016 <- firstsplit_june2016 %>% separate(pickup_time, sep = ":", n = 3
                                          separate(dropoff_date, sep = "-", n = 3,
                                                   into = c("DO_year", "DO_month", "DO_day"))
 
+## Retrieve pickups information
 pu_june2016_raw <- subset(clean_june2016, subset = PU_hour == 10 & PU_minute <= 30)[,c(3:5,9:11,13:16)]
 pu_june2016 <- pu_june2016_raw[,c(1:3,7:8)]
 pu_june2016 <- subset(pu_june2016, subset = pickup_latitude != 0 & pickup_longitude != 0)
 
+## Retrieve dropoffs information
 do_june2016_raw <- subset(clean_june2016, subset = DO_hour == 10 & DO_minute <= 30)[,c(3:5,9:11,13:16)]
 do_june2016 <- do_june2016_raw[,c(4:6,9:10)]
 do_june2016 <- subset(do_june2016, subset = dropoff_latitude != 0 & dropoff_longitude != 0)
 
+## Create blank map
 zoom_map_raw <- get_map(location = c(-73.98, 40.76), zoom = 12, scale = 2)
 zoom_map <- ggmap(zoom_map_raw, legend = "none")
 
-
+## Create pickups map
 pickup_map <- zoom_map + geom_point(data = pu_june2016, size = 0.1, na.rm = TRUE, shape = 15,
                                     colour = "navyblue", alpha = .2,
                                        aes(x = pickup_longitude, y = pickup_latitude)) + 
@@ -353,7 +117,8 @@ pickup_map <- zoom_map + geom_point(data = pu_june2016, size = 0.1, na.rm = TRUE
   ggtitle("Manhattan Taxi Pickups: June 20, 2016 at 10AM") +
   theme(axis.line = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5))
-  
+
+## Create dropoffs map  
 dropoff_map <- zoom_map + geom_point(data = do_june2016, size = 0.1, na.rm = TRUE, shape = 15,
                                      colour = "darkred", alpha = .2,
                                        aes(x = dropoff_longitude, y = dropoff_latitude)) + 
@@ -363,6 +128,8 @@ dropoff_map <- zoom_map + geom_point(data = do_june2016, size = 0.1, na.rm = TRU
         axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5))
 
 pickup_map; dropoff_map
+
+## Save maps
 ggsave(filename = "Images/Paper/Raw_Pickups.jpeg", plot = pickup_map,
        width = 7, height = 7, device = "jpeg")
 ggsave(filename = "Images/Paper/Raw_Dropoffs.jpeg", plot = dropoff_map,
@@ -370,17 +137,22 @@ ggsave(filename = "Images/Paper/Raw_Dropoffs.jpeg", plot = dropoff_map,
 ```
 
 ```{r}
+## Retrieve model values for Monday June 20th, 2016 at 10:00am
 obs <- testing_nd[,c(1,22)]
 means <- mean_nd[, c(1,84)]
 smooth <- smooth_nd[,c(1,84)]
 preds <- predicts_nd[,21]
 
+## Create data frame of all values
 Mon10 <- data.frame(geohash = obs$geohash, obs = obs$Mon_10_0, means = means$Sum_Mon_10_0, 
                     smooth = smooth$Sum_Mon_10_0, preds = preds)
+
+## Retrieve latitude and longitude of all cells
 hashes <- gh_decode(Mon10$geohash)
 Mon10$Lat <- hashes$lat
 Mon10$Lon <- hashes$lng
 
+## Create color indices for maps
 Mon10$obs_color <- cut(Mon10$obs,
                           breaks = c(-300, -5,-0.5,0.5,5,300),
                           labels = c("(-219,-6)", "(-5,-1)", "0", "(1,5)", "(6,76)"))
@@ -394,6 +166,7 @@ Mon10$pred_color <- cut(Mon10$preds,
                           breaks = c(-300, -5,-0.5,0.5,5,300),
                           labels = c("(-202,-6)", "(-5,-1)", "0", "(1,5)", "(6,37)"))
 
+## Create map of raw observations
 Mon10_obs_map <- zoom_map + geom_point(data = Mon10, size = 0.9, na.rm = TRUE, shape = 15,
                                        aes(x = Lon, y = Lat, color = obs_color)) + 
   scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
@@ -403,6 +176,8 @@ Mon10_obs_map <- zoom_map + geom_point(data = Mon10, size = 0.9, na.rm = TRUE, s
   theme(axis.line = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
         legend.position = "none")
+
+## Create map of cell means
 Mon10_mean_map <- zoom_map + geom_point(data = Mon10, size = 1.2, na.rm = TRUE, shape = 15,
                                        aes(x = Lon, y = Lat, color = mean_color)) + 
   scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
@@ -412,6 +187,8 @@ Mon10_mean_map <- zoom_map + geom_point(data = Mon10, size = 1.2, na.rm = TRUE, 
   theme(axis.line = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
         legend.title = element_text(size = 8), legend.text = element_text(size = 9))
+
+## Create KNN smoothed map
 Mon10_smooth_map <- zoom_map + geom_point(data = Mon10, size = 1.2, na.rm = TRUE, shape = 15,
                                        aes(x = Lon, y = Lat, color = smooth_color)) + 
   scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
@@ -421,6 +198,8 @@ Mon10_smooth_map <- zoom_map + geom_point(data = Mon10, size = 1.2, na.rm = TRUE
   theme(axis.line = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
         legend.title = element_text(size = 8), legend.text = element_text(size = 9))
+
+## Create prediction map
 Mon10_pred_map <- zoom_map + geom_point(data = Mon10, size = 1.2, na.rm = TRUE, shape = 15,
                                        aes(x = Lon, y = Lat, color = pred_color)) + 
   scale_color_manual(values = c("darkred", "lightcoral", "grey", "dodgerblue", "navyblue"),
@@ -431,6 +210,7 @@ Mon10_pred_map <- zoom_map + geom_point(data = Mon10, size = 1.2, na.rm = TRUE, 
         axis.ticks = element_blank(), plot.title = element_text(size = 14, hjust = 0.5),
         legend.title = element_text(size = 8), legend.text = element_text(size = 9))
 
+## Save all maps
 ggsave(filename = "Images/Presentation/ObsMap.jpeg", plot = Mon10_obs_map,
        width = 7, height = 7, device = "jpeg")
 ggsave(filename = "Images/Paper/MeanMap.jpeg", plot = Mon10_mean_map,

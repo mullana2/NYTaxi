@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+## Load required packages
 library(caret)
 library(dplyr)
 library(e1071)
@@ -18,33 +19,48 @@ library(stringr)
 library(forecast)
 ```
 
+This R file takes the compiled net pickups data and performs the spatial/temporal predictive modeling for each day of the week and half-hour in our test data. For this analysis, the week of June 20th to June 27th, 2016 is used to test prediction accuracy. 
 
 ```{r}
+## Retrieve the geohash IDs for Manhattan
 geohashes <- read.csv("Data/geohashes.csv")
 geo_index <- as.character(geohashes$geohash)
 
+## Create an index of season in the year
 winter <- c(rep(c(rep(T, 10), rep(F, 45), rep(T, 5)), 7), rep(T, 10), rep(F, 20))
 spring <- c(rep(c(rep(F, 10), rep(T, 15), rep(F, 35)), 7), rep(F, 10), rep(T, 15), rep(F, 5))
 summer <- c(rep(c(rep(F, 25), rep(T, 15), rep(F, 20)), 7), rep(F, 25), rep(T, 5))
 fall <- c(rep(c(rep(F, 40), rep(T, 15), rep(F, 5)), 7), rep(F, 30))
 
+## Create index of dat of the week
 days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 path <- rep(NA, 7)
+
+## Create master data frame for cell means
 mean_nd <- data.frame(geohash = geo_index)
 
+## Loop over every day of the week
 for(i in 1:7){
+  ## Retrieve list of data files
   path[i] <- str_c("Data/All_Counts/", days[i])
   all_files <- list.files(path[i])
   num_files <- length(all_files)
+  
+  ## Loop over every data file in a given day
   for(file in all_files){
+    
+    ## Read in the given file
     filename <- substr(file, 1, 8)
     #print(filename)
     filepath <- str_c(path[i], "/", file)
     full_data <- read.csv(filepath)[,-1]
+    
+    ## Subset data to Manhattan, set NA's to be 0
     geo_data <- full_data[which(full_data$geohash %in% geo_index),]
     data <- geo_data[,-1] 
     data[is.na(data)] <- 0
     
+    ## Subset data by season of the year, compute cell means
     win_data <- data[,winter]
     win_means <- rowMeans(win_data)
     spr_data <- data[,spring]
@@ -54,6 +70,7 @@ for(i in 1:7){
     fall_data <- data[,fall]
     fall_means <- rowMeans(fall_data)
     
+    ## Put all seasons in a single file, merge to master file
     agg_data <- data.frame(geohash = geo_data$geohash, win = win_means, spr = spr_means,
                            summ = sum_means, fall = fall_means)
     names(agg_data) <- c("geohash", str_c("Win_", filename), str_c("Spr_", filename), 
@@ -66,52 +83,81 @@ for(i in 1:7){
 
 ```{r, warning=FALSE}
 #mean_nd <- read.csv("Data/Mean_ND.csv")
+
+## Create master data frame for KNN smoothed means
 smooth_nd <- data.frame(geohash = mean_nd$geohash)
 
+## Loop over every season/day of the week/half-hour block in the data
 for(block in 2:ncol(mean_nd)){
   #print(names(mean_nd)[block])
   data <- mean_nd[,c(1,block)]
   names(data) <- c("geohash", "means")
+  
+  ## Decode geohash into latitude/longitude
   hashes <- gh_decode(data$geohash)
   data$lat <- scale(hashes$lat)
   data$lng <- scale(hashes$lng)
+  
+  ## Run KNN smoother on data
   control <- trainControl(method = "cv", number = 10, classProbs = TRUE)
   mod_knn <- train(means~lng+lat, data = data, method = "knn",
                 trControl = control, tuneGrid = expand.grid(k = 1:20), metric = "RMSE")
+  
+  ## Return spatially smoothed predictions, merge to master data frame
   smooth_nd[,block] <- predict(mod_knn, newdata = data[,3:4])
 }
+
+## Set uniquely identifiable names
 names(smooth_nd) <- names(mean_nd)
 #write.csv(smooth_nd, "Data/Smooth_ND.csv")
 ```
 
 ```{r}
 #smooth_nd <- read.csv("Data/Smooth_ND.csv")
+
+## Create indices for day of the week and cells in Manhattan
 days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 path <- rep(NA, 7)
 geo_index <- as.character(smooth_nd$geohash)
+
+## Create master data frames for deviation statistics and test data
 deviation_nd <- data.frame(geohash = geo_index)
 testing_nd <- data.frame(geohash = geo_index)
 
 index = 1
+
+## Loop over day of the week
 for(i in 1:7){
+  ## Retrieve all files for given day
   path[i] <- str_c("Data/All_Counts/", days[i])
   all_files <- list.files(path[i])
+  
+  ## Loop over each file 
   for(file in all_files){
+    ## Load data
     filename <- substr(file, 1, 8)
     print(filename)
     filepath <- str_c(path[i], "/", file)
     full_data <- read.csv(filepath)[,-1]
+    
+    ## Subset to Manhattan
     geo_data <- full_data[which(full_data$geohash %in% geo_index),]
     data <- geo_data[,c(1,447:450)] 
     data[is.na(data)] <- 0
     
+    ## Retrieve only summer smoothed means (test data is only during the Summer season)
     smooth_column <- (index-1)*4 + 4
+    
+    ## Retrieve observations for given day/time and merge with smoothed means
     diff_data <- merge(data, smooth_nd[,c(1,smooth_column)], by = "geohash", all = TRUE)
+    
+    ## Compute deviation statistics, set unique names, then merge to master data frame
     diff_data[,7:10] <- diff_data[,2:5] - diff_data[,6]
     names(diff_data) <- c("geohash", "week1", "week2", "week3", "week4", "smooth", str_c(filename, "_1"),
                           str_c(filename, "_2"), str_c(filename, "_3"), str_c(filename, "_4"))
     deviation_nd <- merge(deviation_nd, diff_data[,c(1,7:10)], by = "geohash", all = TRUE)
     
+    ## Retrieve test data as the last week in the data
     test_data <- geo_data[,c(1,450)]
     test_data[is.na(test_data)] <- 0
     names(test_data) <- c("geohash", filename)
@@ -121,8 +167,10 @@ for(i in 1:7){
   }
 }
 
+## Put deviation statistics in sequential order by half-hour
 order <- c(seq(1,1344, 4), seq(2,1344,4), seq(3,1344,4), seq(4,1344,4)) + 1
 dev_nd <- deviation_nd[,order]
+
 #write.csv(dev_nd, "Data/Deviation_ND.csv")
 #write.csv(testing_nd, "Data/Testing_ND.csv")
 ```
@@ -131,25 +179,43 @@ dev_nd <- deviation_nd[,order]
 #dev_nd <- read.csv("Data/Deviation_ND.csv")
 #testing_nd <- read.csv("Data/Testing_ND.csv")
 #smooth_nd <- read.csv("Data/Smooth_ND.csv")
+
+## Set indices for number of weeks and number of cells in data 
 size <- ncol(dev_nd)
 tot_cells <- nrow(dev_nd)
+
+## Create master data frame for predictions 
 predicts_nd <- matrix(NA, nrow = tot_cells, ncol = 336)
 
+## Loop over every day of the week + half-hour combination
 for(time in 1:336){
+  
+  ## Determine the half-hour being predicted, cut data before this value
   length <- size - (336 - time) - 1
+  ## Loop over each cell in the data
   for(cell_id in 1:tot_cells){
+    
+    ## Retrieve time series for given cell
     cell <- numeric(length)
     for(j in 1:length){
       cell[j] <- dev_nd[cell_id, j]
     }
     ts <- ts(cell)
+    
+    ## Fit ARMA(2,2) model to deviation statistics, retrieve predictions and merge to master
     cell_arima <- arima(ts, order = c(2,0,2), method = "ML")
     predicts_nd[cell_id, time] <- predict(cell_arima, n_ahead = 1)$pred[1]
+    
+    ## Sanity check
     if(cell_id %% 500 == 0 | cell_id == tot_cells){print(str_c("Time: ", time, " Cell: ", cell_id))}
   }
 }
 
-## Evaluating Model Fit
+#write.csv(predicts_nd, "Data/Predicts_ND.csv")
+```
+
+```{r}
+## Testing ARMA(2,2) fit for 10 random cells
 test <- sample_n(dev_nd, 10)
 cell1 <- cell2 <- cell3 <- cell4 <- cell5 <- cell6 <- cell7 <- cell8 <- cell9 <- cell10 <- numeric(1344)
 for(j in 1:1344){
@@ -160,36 +226,15 @@ for(j in 1:1344){
   cell5[j] <- test[5,j]; cell10[j] <- test[10,j]
 }
 
+## Plot time series + ACF/PACF, and plot ARMA(2,2) residuals with residual ACF/PACF
 par(mfrow = c(2,3), mai = c(0.6, 0.6, 0.2, 0.2))
 plot(ts(cell1), ylab = "Observed", main = "Cell 1")
 acf(ts(cell1)); pacf(ts(cell1))
 mod1 <- arima(ts(cell1), order = c(2,0,2), method = "ML")
 plot(mod1$residuals, ylab = "Residuals", main = "ARMA(2,2)")
 acf(mod1$residuals); pacf(mod1$residuals)
-#write.csv(predicts_nd, "Data/Predicts_ND.csv")
 ```
 
-```{r}
-#smooth_nd <- read.csv("Data/Smooth_ND.csv")
-#predicts_nd <- read.csv("Data/Predicts_ND.csv")
-r2 <- numeric(336)
-rmse <- numeric(336)
-for(i in 1:336){
-  smooth_means <- smooth_nd[,(seq(4,1345,4))]
-  preds <- smooth_means[,i] + predicts_nd[,i]
-  obs <- testing_nd[,i+1]
-  r2[i] <- cor(preds, obs)^2
-  rmse[i] <- sqrt(mean((preds-obs)^2))
-}
-
-r2[21]; rmse[21]
-qqnorm(obs-preds)
-qqline(obs-preds)
-
-par(mfrow = c(2,2))
-hist(obs-preds)
-
-```
 
 
 
